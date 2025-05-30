@@ -39,10 +39,11 @@ ENV/
 .cursorrules
 .specstory/
 .pytest_cache/
-
+./src/model
 # Generated files
 *.png
 *.jpg
 *.jpeg
 *.gif
 *.pdf 
+src/model/
