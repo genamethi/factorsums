@@ -1,0 +1,17 @@
+#Instructions
+
+Note first that we can use the converse of Euclid's Lemma to define prime numbers:
+
+Let $a$, $b$, and $p$ be integers greater than 1. We say that the number $p$ is \emph{prime}, if it has the following property: When $p$ divides $a \times b$ then it is implied that $p$ must divide $a$ or that $p$ must divide $b$.
+
+We now consider numbers $n$, of the form
+\[
+n = (p^j) \cdot (q^k) + (p^l) \cdot (q^m)
+\]
+where $p$ and $q$ are prime, and $k, j, l, m$ are natural numbers (we include $0$) such that $k + j \geq 1$, and $l + m \geq 1$. Call this a 2-sum (with $p, q$ factor-summands). For such an $n$ we write: $S(n, p, q)$ for the set of all such number theoretic partitions of $n$.
+
+For example, $S(23, 2, 3)$ is the empty set since there are no $k, j, l, m$ that satisfy $23 = (2^j) \cdot (3^k) + (2^l) \cdot (3^m)$.
+
+Produce a Python program using standard libraries that takes three numbers $n, p, q$ and returns the number theoretic partition in set form in a cleanly readable form. Make sure it handles the empty set, checks whether $p$ and $q$ are prime, and whether they are both less than $n$. For any incorrect arguments, supply an error message with an informative response.
+
+Also print the numbers $k, j, l, m$ on the rows associated with each element of the partition.
