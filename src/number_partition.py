@@ -9,38 +9,8 @@ class NumberPartition:
         self.n = n
         self.partitions = set()
 
-    def get_partitions(self, length=None):
-        """
-        Generate all integer partitions of n into k positive summands.
-        - If length is None: all lengths.
-        - If length is int: partitions of that length.
-        - If length is tuple/list: partitions for all lengths in [start, end].
-        """
-        n = self.n
-        if length is None:
-            min_length, max_length = 1, n
-        elif isinstance(length, int):
-            min_length = max_length = length
-        elif isinstance(length, (tuple, list)):
-            if len(length) == 1:
-                min_length = max_length = length[0]
-            else:
-                min_length, max_length = length
-        else:
-            raise ValueError("length must be None, int, tuple, or list")
-        results = []
-        def helper(remaining, current, k):
-            if len(current) == k:
-                if remaining == 0:
-                    results.append(tuple(current))
-                return
-            start = 1
-            end = remaining - (k - len(current) - 1)
-            for i in range(start, end + 1):
-                helper(remaining - i, current + [i], k)
-        for k in range(min_length, max_length + 1):
-            helper(n, [], k)
-        return results
+    def get_partitions(self):
+      return self.partitions
 
     def __str__(self):
         if not self.partitions:
@@ -146,35 +116,30 @@ class FactorSumNumberPartition(NumberPartition):
         while temp > 0:
             temp //= min(p, q)
             max_exp += 1
-        # Precompute all possible (j, k, value) for p^j * q^k <= n//2, j+k >= 1
-        terms = []
+        # Precompute all possible (j, k, value) for p^j * q^k < n, j+k >= 1
+        value_to_exponents = {}
         for j in range(max_exp + 1):
             for k in range(max_exp + 1):
                 if j + k < 1:
                     continue
                 value = (p ** j) * (q ** k)
-                if value > n // 2:
+                if value >= n:
                     continue
-                terms.append((j, k, value))
-        # Map value to list of (j, k) for fast lookup
-        value_to_exponents = {}
-        for (j, k, value) in terms:
-            value_to_exponents.setdefault(value, []).append((j, k))
-        # For each term, look for a complement
-        for (j, k, value1) in terms:
-            value2 = n - value1
-            if value2 <= 0:
+                value_to_exponents.setdefault(value, []).append((j, k))
+        # For each i from 1 to (n // 2) + 1, check if both i and n-i are valid terms
+        for i in range(1, (n // 2) + 2):
+            j_val = n - i
+            if j_val < 1:
                 continue
-            for (l, m) in value_to_exponents.get(value2, []):
-                if is_prime(n):
-                    # Only allow (j, 0) and (0, m) pairs for prime n
-                    if not ((k == 0 and l == 0 and m > 0) or (j == 0 and l > 0 and m == 0)):
+            if i not in value_to_exponents or j_val not in value_to_exponents:
+                continue
+            for (j, k) in value_to_exponents[i]:
+                for (l, m) in value_to_exponents[j_val]:
+                    canon = tuple(sorted([(j, k), (l, m)]))
+                    if canon in seen:
                         continue
-                canon = tuple(sorted([(j, k), (l, m)]))
-                if canon in seen:
-                    continue
-                seen.add(canon)
-                self.partitions.add(FactorSumPartition(j, k, l, m, p, q, n))
+                    seen.add(canon)
+                    self.partitions.add(FactorSumPartition(j, k, l, m, p, q, n))
 
     def __str__(self):
         """
@@ -193,6 +158,9 @@ class FactorSumNumberPartition(NumberPartition):
             result.append(f"Verification: {self.p}^{partition.j} × {self.q}^{partition.k} + "
                           f"{self.p}^{partition.l} × {self.q}^{partition.m} = {self.n}")
         return "\n".join(result)
+
+    def get_partitions(self, length=None):
+        return self.partitions
 
 def main():
     parser = argparse.ArgumentParser(

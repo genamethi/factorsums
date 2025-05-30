@@ -47,3 +47,4 @@ ENV/
 *.gif
 *.pdf 
 src/model/
+.ideascontext
