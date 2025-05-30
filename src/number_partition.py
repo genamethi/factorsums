@@ -50,29 +50,6 @@ class NumberPartition:
             result.append(f"\nPartition: {partition}")
         return "\n".join(result)
 
-    def get_partitions_by_splitting(self, length):
-        """
-        Generate all integer partitions of n into exactly 'length' positive summands
-        by recursively splitting the largest part and maintaining non-increasing order.
-        This method avoids duplicates and is efficient for fixed-length partitions.
-        """
-        n = self.n
-        results = []
-        def split_partition(partition):
-            if len(partition) == length:
-                results.append(tuple(partition))
-                return
-            for i, part in enumerate(partition):
-                # Only split if it will not break non-increasing order
-                for a in range(part // 2, 0, -1):
-                    b = part - a
-                    # Only add if a >= b and (i == 0 or partition[i-1] >= a)
-                    new_partition = list(partition[:i]) + [a, b] + list(partition[i+1:])
-                    new_partition.sort(reverse=True)
-                    split_partition(new_partition)
-        split_partition([n])
-        return results
-
 class FactorSumPartition:
     """
     Represents a partition of n as the sum of two terms, each of the form (p^j)*(q^k).
