@@ -15,10 +15,13 @@ class NumberPartition:
         pass
 
 class FactorSumPartition:
-    def __init__(self, k, j, l, m, p, q, n):
+    def __init__(self, j, k, l, m, p, q, n):
         pass
 
     def verify(self):
+        pass
+
+    def canonical(self):
         pass
 
     def __str__(self):

@@ -1,4 +1,5 @@
-from number_partition import FactorSumNumberPartition, NumberPartitionError
+from .number_partition import FactorSumNumberPartition, NumberPartitionError
+from .prime_utils import is_prime
 
 def find_sum_bases(n, max_base=None):
     """
@@ -25,19 +26,6 @@ def find_sum_bases(n, max_base=None):
                 continue
     
     return valid_pairs
-
-def is_prime(n):
-    """Check if a number is prime."""
-    if n < 2:
-        return False
-    if n == 2:
-        return True
-    if n % 2 == 0:
-        return False
-    for i in range(3, int(n ** 0.5) + 1, 2):
-        if n % i == 0:
-            return False
-    return True
 
 def main():
     import argparse
