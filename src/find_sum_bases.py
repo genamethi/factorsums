@@ -18,7 +18,7 @@ def find_sum_bases(n, max_base=None):
         for q in range(2, max_base + 1):
             if not is_prime(q) or q <= p:
                 continue
-            try:
+            try: #need to modify FSNP to return type of partition
                 partition = FactorSumNumberPartition(n, p, q)
                 if len(partition.get_partitions()) > 0:
                     valid_pairs.append((p, q))

@@ -10,6 +10,7 @@ def is_prime(n):
     Returns:
         bool: True if n is prime, False otherwise.
     """
+    #Consider wrapper with memoization for algorithms that make multiple calls
     if n < 2:
         return False
     if n == 2:
