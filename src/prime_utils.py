@@ -10,6 +10,10 @@ def is_prime(n):
     Returns:
         bool: True if n is prime, False otherwise.
     """
+<<<<<<< HEAD
+=======
+    #Consider wrapper with memoization for algorithms that make multiple calls
+>>>>>>> testing
     if n < 2:
         return False
     if n == 2:
@@ -21,4 +25,8 @@ def is_prime(n):
     for d in range(3, limit, 2):
         if n % d == 0:
             return False
+<<<<<<< HEAD
     return True 
+=======
+    return True
+>>>>>>> testing
