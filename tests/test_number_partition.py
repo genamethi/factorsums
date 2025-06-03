@@ -1,5 +1,5 @@
 import pytest
-from src.number_partition import (
+from HallFree.number_partition import (
     FactorSumNumberPartition, 
     NumberPartitionError, 
     FactorSumPartition,

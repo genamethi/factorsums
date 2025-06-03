@@ -1,5 +1,5 @@
 import pytest
-from src.find_sum_bases import find_sum_bases
+from HallFree.find_sum_bases import find_sum_bases
 
 def test_find_sum_bases_basic():
     pairs = find_sum_bases(10)
