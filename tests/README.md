@@ -36,4 +36,16 @@ pytest -m optional
 ## Notes
 - All tests should pass for a successful build.
 - For performance or slow tests, consider using additional markers (e.g., `@pytest.mark.slow`).
-- If you add new test files, update this README to reflect the changes. 
+- If you add new test files, update this README to reflect the changes.
+
+## Experimental Modules
+
+### HallFreePartitions
+- This module explores coprime two-term partitions of n as x + y = n, with x from products of primes in P, y from products of primes in Q, and gcd(x, y) = 1.
+- It is designed for research questions involving sums of products of prime powers, and is extensible to arbitrary disjoint prime sets.
+- Usage examples and docstrings follow SageMath conventions.
+- To run example scripts, use:
+  ```
+  python -m src.HallFreePartitions
+  ```
+- This module is experimental and under active development. 
