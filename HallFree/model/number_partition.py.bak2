@@ -1,0 +1,123 @@
+from .prime_utils import is_prime
+
+class NumberPartitionError(Exception):
+    """Custom exception for number partition errors."""
+    pass
+
+class NumberPartition:
+    """Base class for number partitions."""
+    def __init__(self, n):
+        self.n = n
+
+    def get_partitions(self):
+        raise NotImplementedError("Subclass must implement this method")
+
+    def __str__(self):
+        raise NotImplementedError("Subclass must implement this method")
+
+class FactorSumPartition:
+    """Class representing a factor sum partition."""
+    def __init__(self, j, k, l, m, p, q, n):
+        self.j = j
+        self.k = k
+        self.l = l
+        self.m = m
+        self.p = p
+        self.q = q
+        self.n = n
+
+    def verify(self):
+        """Verify that the partition is valid."""
+        return (self.p ** self.j) * (self.q ** self.k) + (self.p ** self.l) * (self.q ** self.m) == self.n
+
+    def canonical(self):
+        """Return a canonical representation of the partition."""
+        return (min(self.j, self.l), min(self.k, self.m), max(self.j, self.l), max(self.k, self.m))
+
+    def __str__(self):
+        return f"{{({self.p}^{self.j}) * ({self.q}^{self.k}), ({self.p}^{self.l}) * ({self.q}^{self.m})}} = {{({self.p**self.j} * {self.q**self.k}), ({self.p**self.l} * {self.q**self.m})}} = {{{self.n}}}\n  k={self.k}, j={self.j}, l={self.l}, m={self.m}"
+
+    def __repr__(self):
+        return f"FactorSumPartition({self.j}, {self.k}, {self.l}, {self.m}, {self.p}, {self.q}, {self.n})"
+
+    def __eq__(self, other):
+        return self.canonical() == other.canonical()
+
+    def __hash__(self):
+        return hash(self.canonical())
+
+class FactorSumNumberPartition(NumberPartition):
+    """Class representing a factor sum number partition."""
+    def __init__(self, n, p, q):
+        super().__init__(n)
+        self.p = p
+        self.q = q
+        self.validate_inputs()
+        self._partitions = self.find_partitions()
+
+    def validate_inputs(self):
+        """Validate the inputs."""
+        if not is_prime(self.p) or not is_prime(self.q):
+            raise NumberPartitionError("Both p and q must be prime numbers")
+        if self.p >= self.n or self.q >= self.n:
+            raise NumberPartitionError("Both p and q must be less than n")
+        if self.p <= 1 or self.q <= 1:
+            raise NumberPartitionError("Both p and q must be greater than 1")
+
+    def find_partitions(self):
+        """Find all factor sum partitions."""
+        partitions = set()
+        max_j = max_l = 0
+        while self.p ** max_j <= self.n:
+            max_j += 1
+        max_k = max_m = 0
+        while self.q ** max_k <= self.n:
+            max_k += 1
+        seen = set()
+        for j in range(max_j):
+            for k in range(max_k):
+                if j + k < 1:
+                    continue
+                term1 = (self.p ** j) * (self.q ** k)
+                if term1 > self.n:
+                    break
+                term2 = self.n - term1
+                if term2 <= 0:
+                    continue
+                for l in range(max_j):
+                    for m in range(max_k):
+                        if l + m < 1:
+                            continue
+                        if (self.p ** l) * (self.q ** m) == term2:
+                            partition = FactorSumPartition(j, k, l, m, self.p, self.q, self.n)
+                            canon = tuple(sorted([(j, k), (l, m)]))
+                            if canon in seen:
+                                continue
+                            seen.add(canon)
+                            partitions.add(partition)
+        return partitions
+
+    def get_partitions(self):
+        return self._partitions
+
+    def __str__(self):
+        if not self._partitions:
+            return "No factor-sum partitions found for the given inputs."
+        return "Factor-sum partitions:\n" + "\n".join(str(partition) for partition in self._partitions)
+
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description="Find factor sum partitions")
+    parser.add_argument("n", type=int, help="The number to find partitions for")
+    parser.add_argument("p", type=int, help="The first prime number")
+    parser.add_argument("q", type=int, help="The second prime number")
+    args = parser.parse_args()
+    try:
+        partition = FactorSumNumberPartition(args.n, args.p, args.q)
+        print(partition)
+    except NumberPartitionError as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
