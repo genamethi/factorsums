@@ -1,0 +1,1559 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.11, pytest-8.4.1, pluggy-1.6.0
+rootdir: /home/erpage159/fluid/forprofit/factorsums
+configfile: pytest.ini
+plugins: anyio-4.9.0
+collected 86 items
+
+tests/test_number_partition.py ......................                    [ 25%]
+tests/test_prime_utils.py ..                                             [ 27%]
+tests/test_sage_factor_sums.py .............FF...FFFF...F.FF....F..FFFFF [ 75%]
+FF.FF...FFF.F..FF.FF.                                                    [100%]
+
+=================================== FAILURES ===================================
+_________________________ test_prime_no_partitions[13] _________________________
+
+n = 13
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 2), (3, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 2), (3, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[17] _________________________
+
+n = 17
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 3), (3, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 3), (3, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[41] _________________________
+
+n = 41
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 4), (5,..., 5), (3, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 5), (3, 2))
+E         ((2, 4), (5, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[43] _________________________
+
+n = 43
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 4), (3, 3))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 4), (3, 3))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[53] _________________________
+
+n = 53
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 2), (7, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 2), (7, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[59] _________________________
+
+n = 59
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 5), (3, 3))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 5), (3, 3))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[73] _________________________
+
+n = 73
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 6), (3, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 6), (3, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[89] _________________________
+
+n = 89
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 3), (3,..., 6), (5, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 3), (3, 4))
+E         ((2, 6), (5, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_________________________ test_prime_no_partitions[97] _________________________
+
+n = 97
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 4), (3, 4))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 4), (3, 4))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+________________________ test_prime_no_partitions[113] _________________________
+
+n = 113
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 5), (3,..., 6), (7, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 6), (7, 2))
+E         ((2, 5), (3, 4))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+________________________ test_prime_no_partitions[137] _________________________
+
+n = 137
+
+    @pytest.mark.parametrize("n", [
+        # Primes confirmed to have no solutions within (n//2) limit for p,q
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 43, 53, 59, 61, 67, 71, 73, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137
+    ])
+    def test_prime_no_partitions(n):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == set()
+E       assert {((2, 4), (11..., 7), (3, 2))} == set()
+E         
+E         Extra items in the left set:
+E         ((2, 4), (11, 2))
+E         ((2, 7), (3, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:24: AssertionError
+_____________ test_primes_with_partitions[5-expected_partitions0] ______________
+
+n = 5, expected_partitions = {((2, 1), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 1), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 1), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[7-expected_partitions1] ______________
+
+n = 7, expected_partitions = {((2, 2), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 2), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 2), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[11-expected_partitions2] _____________
+
+n = 11, expected_partitions = {((2, 1), (3, 2)), ((2, 3), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 1), (3,..., 3), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 1), (3, 2))
+E         ((2, 3), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[13-expected_partitions3] _____________
+
+n = 13, expected_partitions = {((2, 2), (3, 2)), ((2, 3), (5, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert {((2, 2), (3, 2))} == {((2, 2), (3,..., 3), (5, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 3), (5, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[19-expected_partitions4] _____________
+
+n = 19, expected_partitions = {((2, 4), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 4), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 4), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[29-expected_partitions5] _____________
+
+n = 29, expected_partitions = {((2, 2), (5, 2)), ((2, 4), (13, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert {((2, 2), (5, 2))} == {((2, 2), (5,... 4), (13, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 4), (13, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[37-expected_partitions7] _____________
+
+n = 37, expected_partitions = {((2, 5), (5, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 5), (5, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 5), (5, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+_____________ test_primes_with_partitions[41-expected_partitions8] _____________
+
+n = 41, expected_partitions = {((2, 4), (5, 2))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert {((2, 4), (5,..., 5), (3, 2))} == {((2, 4), (5, 2))}
+E         
+E         Extra items in the left set:
+E         ((2, 5), (3, 2))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[61-expected_partitions12] _____________
+
+n = 61, expected_partitions = {((2, 5), (29, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 5), (29, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 5), (29, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[67-expected_partitions13] _____________
+
+n = 67, expected_partitions = {((2, 6), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 6), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 6), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[71-expected_partitions14] _____________
+
+n = 71, expected_partitions = {((2, 6), (7, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 6), (7, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 6), (7, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[83-expected_partitions16] _____________
+
+n = 83, expected_partitions = {((2, 1), (3, 4)), ((2, 6), (19, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 1), (3,... 6), (19, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 6), (19, 1))
+E         ((2, 1), (3, 4))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[101-expected_partitions19] ____________
+
+n = 101, expected_partitions = {((2, 6), (37, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 6), (37, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 6), (37, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[107-expected_partitions20] ____________
+
+n = 107, expected_partitions = {((2, 6), (43, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 6), (43, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 6), (43, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[127-expected_partitions22] ____________
+
+n = 127, expected_partitions = {((2, 1), (5, 3))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 1), (5, 3))}
+E         
+E         Extra items in the right set:
+E         ((2, 1), (5, 3))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+____________ test_primes_with_partitions[131-expected_partitions23] ____________
+
+n = 131, expected_partitions = {((2, 7), (3, 1))}
+
+    @pytest.mark.parametrize("n, expected_partitions", [
+        # Corrected expectations based on p, q <= n // 2 and j, k >= 1
+        (5, {tuple(sorted([(S(2), 1), (S(3), 1)]))}), # 2^1 + 3^1 = 5 (primes 2,3 <= 5//2=2) - THIS SHOULD BE EMPTY, 3 > 2
+        # Re-evaluating 5. n=5, n//2=2. Possible primes <= 2 is just 2. Cannot find two primes.
+        # So, 5 should be in test_prime_no_partitions.
+    
+        # Re-evaluating 7. n=7, n//2=3. Possible primes <= 3 are 2, 3.
+        # Partitions: e1+e2=7
+        # 2^2 + 3^1 = 4 + 3 = 7. Valid. ((S(2), 2), (S(3), 1))
+        (7, {tuple(sorted([(S(2), 2), (S(3), 1)]))}),
+    
+        # Re-evaluating 11. n=11, n//2=5. Possible primes <= 5 are 2, 3, 5.
+        # 2^1 + 3^2 = 2 + 9 = 11. Valid. ((S(2), 1), (S(3), 2))
+        # 2^3 + 3^1 = 8 + 3 = 11. Valid. ((S(2), 3), (S(3), 1))
+        (11, {tuple(sorted([(S(2), 1), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(3), 1)]))}),
+    
+        # Re-evaluating 13. n=13, n//2=6. Possible primes <= 6 are 2, 3, 5.
+        # 2^2 + 3^2 = 4 + 9 = 13. Valid. ((S(2), 2), (S(3), 2))
+        # 2^3 + 5^1 = 8 + 5 = 13. Valid. ((S(2), 3), (S(5), 1))
+        (13, {tuple(sorted([(S(2), 2), (S(3), 2)])), tuple(sorted([(S(2), 3), (S(5), 1)]))}),
+    
+        # Re-evaluating 19. n=19, n//2=9. Possible primes <= 9 are 2, 3, 5, 7.
+        # 2^4 + 3^1 = 16 + 3 = 19. Valid. ((S(2), 4), (S(3), 1))
+        (19, {tuple(sorted([(S(2), 4), (S(3), 1)]))}),
+    
+        # Re-evaluating 29. n=29, n//2=14. Possible primes <= 14 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 5^2 = 4 + 25 = 29. Valid. ((S(2), 2), (S(5), 2))
+        # 2^4 + 13^1 = 16 + 13 = 29. Valid. ((S(2), 4), (S(13), 1))
+        (29, {tuple(sorted([(S(2), 2), (S(5), 2)])), tuple(sorted([(S(2), 4), (S(13), 1)]))}),
+    
+        # Re-evaluating 31. n=31, n//2=15. Possible primes <= 15 are 2, 3, 5, 7, 11, 13.
+        # 2^2 + 3^3 = 4 + 27 = 31. Valid. ((S(2), 2), (S(3), 3))
+        (31, {tuple(sorted([(S(2), 2), (S(3), 3)]))}),
+    
+        # Remaining cases from original list, re-evaluated:
+        (37, {tuple(sorted([(S(2), 5), (S(5), 1)]))}), # 2^5 + 5^1 = 37. (primes 2,5 <= 37//2=18)
+        (41, {tuple(sorted([(S(2), 4), (S(5), 2)]))}), # 2^4 + 5^2 = 16 + 25 = 41. (primes 2,5 <= 41//2=20)
+        (43, {tuple(sorted([(S(2), 4), (S(3), 3)]))}), # 2^4 + 3^3 = 16 + 27 = 43. (primes 2,3 <= 43//2=21)
+        (53, {tuple(sorted([(S(2), 2), (S(7), 2)]))}), # 2^2 + 7^2 = 4 + 49 = 53. (primes 2,7 <= 53//2=26)
+        (59, {tuple(sorted([(S(2), 5), (S(3), 3)]))}), # 2^5 + 3^3 = 32 + 27 = 59. (primes 2,3 <= 59//2=29)
+        (61, {tuple(sorted([(S(2), 5), (S(29), 1)]))}), # 2^5 + 29^1 = 32 + 29 = 61. (primes 2,29 <= 61//2=30)
+        (67, {tuple(sorted([(S(2), 6), (S(3), 1)]))}), # 2^6 + 3^1 = 64 + 3 = 67. (primes 2,3 <= 67//2=33)
+        (71, {tuple(sorted([(S(2), 6), (S(7), 1)]))}), # 2^6 + 7^1 = 64 + 7 = 71. (primes 2,7 <= 71//2=35)
+        (73, {tuple(sorted([(S(2), 6), (S(3), 2)]))}), # 2^6 + 3^2 = 64 + 9 = 73. (primes 2,3 <= 73//2=36)
+        (83, {
+            tuple(sorted([(S(2), 1), (S(3), 4)])), # 2^1 + 3^4 = 2 + 81 = 83. (primes 2,3 <= 83//2=41)
+            tuple(sorted([(S(2), 6), (S(19), 1)])) # 2^6 + 19^1 = 64 + 19 = 83. (primes 2,19 <= 83//2=41)
+        }),
+        (89, {
+            tuple(sorted([(S(2), 3), (S(3), 4)])), # 2^3 + 3^4 = 8 + 81 = 89. (primes 2,3 <= 89//2=44)
+            tuple(sorted([(S(2), 6), (S(5), 2)]))  # 2^6 + 5^2 = 64 + 25 = 89. (primes 2,5 <= 89//2=44)
+        }),
+        (97, {tuple(sorted([(S(2), 4), (S(3), 4)]))}), # 2^4 + 3^4 = 16 + 81 = 97. (primes 2,3 <= 97//2=48)
+        (101, {tuple(sorted([(S(2), 6), (S(37), 1)]))}), # 2^6 + 37^1 = 64 + 37 = 101. (primes 2,37 <= 101//2=50)
+        (107, {tuple(sorted([(S(2), 6), (S(43), 1)]))}), # 2^6 + 43^1 = 64 + 43 = 107. (primes 2,43 <= 107//2=53)
+        (113, {
+            tuple(sorted([(S(2), 5), (S(3), 4)])), # 2^5 + 3^4 = 32 + 81 = 113. (primes 2,3 <= 113//2=56)
+            tuple(sorted([(S(2), 6), (S(7), 2)]))  # 2^6 + 7^2 = 64 + 49 = 113. (primes 2,7 <= 113//2=56)
+        }),
+        (127, {tuple(sorted([(S(2), 1), (S(5), 3)]))}), # 2^1 + 5^3 = 2 + 125 = 127. (primes 2,5 <= 127//2=63)
+        (131, {tuple(sorted([(S(2), 7), (S(3), 1)]))}), # 2^7 + 3^1 = 128 + 3 = 131. (primes 2,3 <= 131//2=65)
+        (137, {
+            tuple(sorted([(S(2), 4), (S(11), 2)])), # 2^4 + 11^2 = 16 + 121 = 137. (primes 2,11 <= 137//2=68)
+            tuple(sorted([(S(2), 7), (S(3), 2)]))  # 2^7 + 3^2 = 128 + 9 = 137. (primes 2,3 <= 137//2=68)
+        })
+    ])
+    def test_primes_with_partitions(n, expected_partitions):
+        is_prime, partitions = find_sage_sum_bases(n)
+        assert is_prime
+>       assert partitions == expected_partitions
+E       assert set() == {((2, 7), (3, 1))}
+E         
+E         Extra items in the right set:
+E         ((2, 7), (3, 1))
+E         Use -v to get more diff
+
+tests/test_sage_factor_sums.py:96: AssertionError
+=============================== warnings summary ===============================
+tests/test_number_partition.py:192
+  /home/erpage159/fluid/forprofit/factorsums/tests/test_number_partition.py:192: PytestUnknownMarkWarning: Unknown pytest.mark.timeout - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.timeout(2)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[13] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[17] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[41] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[43] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[53] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[59] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[73] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[89] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[97] - assert ...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[113] - assert...
+FAILED tests/test_sage_factor_sums.py::test_prime_no_partitions[137] - assert...
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[5-expected_partitions0]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[7-expected_partitions1]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[11-expected_partitions2]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[13-expected_partitions3]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[19-expected_partitions4]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[29-expected_partitions5]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[37-expected_partitions7]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[41-expected_partitions8]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[61-expected_partitions12]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[67-expected_partitions13]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[71-expected_partitions14]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[83-expected_partitions16]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[101-expected_partitions19]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[107-expected_partitions20]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[127-expected_partitions22]
+FAILED tests/test_sage_factor_sums.py::test_primes_with_partitions[131-expected_partitions23]
+=================== 27 failed, 59 passed, 1 warning in 1.94s ===================
