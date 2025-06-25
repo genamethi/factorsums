@@ -1,10 +1,11 @@
 import pytest
-from src.number_partition import (
+from factorsums.number_partition import (
     FactorSumNumberPartition, 
     NumberPartitionError, 
     FactorSumPartition,
     NumberPartition
 )
+from factorsums.prime_utils import is_prime
 import time
 
 # --- Consolidated core tests from test_number_partition_basic.py ---
