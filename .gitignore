@@ -49,3 +49,6 @@ ENV/
 src/model/
 <<<<<<< HEAD
 .ideascontext
+test_results
+newest_test
+

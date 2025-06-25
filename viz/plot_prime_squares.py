@@ -46,6 +46,20 @@ def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_fi
         zero_partitions_frequency.to_csv(freq_table_output_filename, header=True)
         print(f"Frequency table saved to {freq_table_output_filename}\n")
 
+        # Plot frequency table of zero partitions as a bar chart
+        plt.figure(figsize=(15, 7))
+        zero_partitions_frequency.plot(kind='bar', color='blue')
+        plt.title('Frequency of Zero Partitions by Prime Number Grouping (per 1000)')
+        plt.xlabel('Prime Number (n) Grouping')
+        plt.ylabel('Count of Primes with Zero Partitions')
+        plt.xticks(rotation=90) # Rotate x-axis labels for readability
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.tight_layout() # Adjust layout to prevent labels overlapping
+        
+        bar_chart_output_filename = os.path.join(os.path.dirname(output_filename), "zero_partitions_frequency_bar_chart.png")
+        plt.savefig(bar_chart_output_filename)
+        print(f"Bar chart saved to {bar_chart_output_filename}\n")
+
         # Reset pandas display option to default
         pd.reset_option('display.max_rows')
     else:
