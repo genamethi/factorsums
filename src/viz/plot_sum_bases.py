@@ -1,8 +1,8 @@
 import matplotlib
 matplotlib.use('Agg')  # Set the backend to non-interactive 'Agg'
 from sympy import prime, primerange, isprime
-from find_sum_bases import find_sum_bases
-from number_partition import FactorSumPartition
+from factorsums.archive.find_sum_bases import find_sum_bases
+from factorsums.archive.number_partition import FactorSumPartition
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -82,7 +82,7 @@ def plot_base_pairs(n):
     plt.axis('equal')
     
     # Save the plot
-    plt.savefig(f'sum_bases_plot_n{n}.png')
+    plt.savefig(f'sample/viz/sum_bases_plot_n{n}.png')
     plt.close()
 
 def plot_base_pair_matrix(max_n=50):
@@ -126,7 +126,7 @@ def plot_base_pair_matrix(max_n=50):
     
     # Save the plot
     plt.tight_layout()
-    plt.savefig('sum_bases_matrix.png')
+    plt.savefig('sample/viz/sum_bases_matrix.png')
     plt.close()
 
 def plot_power_pairs(n, max_power=10):
@@ -189,7 +189,7 @@ def plot_power_pairs(n, max_power=10):
                     fontsize=8)
     
     # Save the plot
-    plt.savefig(f'power_pairs_n{n}.png')
+    plt.savefig(f'sample/viz/power_pairs_n{n}.png')
     plt.close()
 
 def main():
@@ -212,12 +212,12 @@ def main():
     if not args.matrix_only:
         print(f"Generating base pair plot for n={args.n}...")
         plot_base_pairs(args.n)
-        print(f"Base pair plot saved as 'sum_bases_plot_n{args.n}.png'")
+        print(f"Base pair plot saved as 'sample/viz/sum_bases_plot_n{args.n}.png'")
     
     if not args.scatter_only:
         print("Generating matrix plot...")
         plot_base_pair_matrix(min(args.n, 50))  # Limit matrix size for readability
-        print("Matrix plot saved as 'sum_bases_matrix.png'")
+        print("Matrix plot saved as 'sample/viz/sum_bases_matrix.png'")
 
 if __name__ == "__main__":
     main() 

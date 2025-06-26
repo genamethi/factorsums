@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_filename="viz/prime_partitions_count_plot.png"):
+def plot_partitions_count(data_filename="../sample/prime_partitions.csv", output_filename="sample/viz/prime_partitions_count_plot.png"):
     """
     Generates a scatter plot of prime numbers vs. their partition counts.
     Primes with zero partitions are highlighted.
@@ -43,7 +43,7 @@ def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_fi
         print("\n")
 
         # Save the frequency table to a CSV file
-        freq_table_output_filename = os.path.join(os.path.dirname(output_filename), "zero_partitions_frequency_by_digits.csv")
+        freq_table_output_filename = "sample/viz/zero_partitions_frequency_by_digits.csv"
         zero_partitions_frequency.to_csv(freq_table_output_filename, header=True)
         print(f"Frequency table saved to {freq_table_output_filename}\n")
 
@@ -57,13 +57,13 @@ def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_fi
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout() # Adjust layout to prevent labels overlapping
         
-        bar_chart_output_filename = os.path.join(os.path.dirname(output_filename), "zero_partitions_frequency_bar_chart_by_digits.png")
+        bar_chart_output_filename = "sample/viz/zero_partitions_frequency_bar_chart_by_digits.png"
         plt.savefig(bar_chart_output_filename)
         print(f"Bar chart saved to {bar_chart_output_filename}\n")
 
         # Analyze and plot the frequency of zero partition counts
         print("Frequency of Zero Partition Counts (per 1000 grouping):")
-        zero_freq_df = pd.read_csv("viz/zero_partitions_frequency.csv")
+        zero_freq_df = pd.read_csv("sample/zero_partitions_frequency.csv")
         
         # Define bins and labels for the counts of zero partitions
         # Based on observed counts from 2 to 21, creating 2-unit bins
@@ -78,7 +78,7 @@ def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_fi
         print("\n")
 
         # Save the frequency of counts table to a CSV file
-        freq_of_counts_output_filename = os.path.join(os.path.dirname(output_filename), "frequency_of_zero_counts_by_range.csv")
+        freq_of_counts_output_filename = "sample/viz/frequency_of_zero_counts_by_range.csv"
         frequency_of_counts.to_csv(freq_of_counts_output_filename, header=True)
         print(f"Frequency of counts table saved to {freq_of_counts_output_filename}\n")
 
@@ -92,7 +92,7 @@ def plot_partitions_count(data_filename="sample/prime_partitions.csv", output_fi
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         
-        bar_chart_of_counts_output_filename = os.path.join(os.path.dirname(output_filename), "frequency_of_zero_counts_bar_chart_by_range.png")
+        bar_chart_of_counts_output_filename = "sample/viz/frequency_of_zero_counts_bar_chart_by_range.png"
         plt.savefig(bar_chart_of_counts_output_filename)
         print(f"Bar chart of zero counts saved to {bar_chart_of_counts_output_filename}\n")
 

@@ -52,3 +52,5 @@ src/model/
 test_results
 newest_test
 
+factorsums.egg-info/
+__pycache__
