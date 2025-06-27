@@ -1,13 +1,20 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from importlib.resources import files
+from pathlib import Path
+from typing import Optional
 
-def plot_partitions_count(data_filename="../sample/prime_partitions.csv", output_filename="sample/viz/prime_partitions_count_plot.png"):
+def plot_partitions_count(data_filename: Optional[Path] = None, output_filename="sample/viz/prime_partitions_count_plot.png"):
     """
     Generates a scatter plot of prime numbers vs. their partition counts.
     Primes with zero partitions are highlighted.
     """
-    if not os.path.exists(data_filename):
+    # Default to bundled resource if no data_filename is provided
+    if data_filename is None:
+        data_filename = files('factorsums.data').joinpath('prime_partitions.csv')
+
+    if not data_filename.exists(): # Use .exists() for Path objects
         print(f"Error: Data file not found at {data_filename}")
         return
 

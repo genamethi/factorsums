@@ -10,7 +10,7 @@ def plot_prime_n_intervals(output_filename="sample/viz/prime_n_intervals_plot.pn
     """
     Generates a scatter plot of prime numbers vs. their N-intervals.
     """
-    plot_df = analyze_partitions(filepath='sample/prime_partitions.csv')
+    plot_df = analyze_partitions()
 
     plt.figure(figsize=(12, 6))
     plt.scatter(
@@ -39,7 +39,7 @@ def plot_maximal_n_intervals(output_filename="sample/viz/prime_n_intervals_maxim
     """
     Generates a scatter plot of prime numbers vs. their maximal N-intervals.
     """
-    plot_df = analyze_partitions(filepath='sample/prime_partitions.csv')
+    plot_df = analyze_partitions()
 
     # Group by n and find the maximum n_interval for each n
     maximal_n_intervals_df = plot_df.groupby('n')['n_interval'].max().reset_index()
@@ -73,7 +73,7 @@ def plot_maximal_n_intervals_segmented():
     Generates multiple scatter plots of prime numbers vs. their maximal N-intervals,
     segmented into 10,000-unit ranges of n.
     """
-    plot_df = analyze_partitions(filepath='sample/prime_partitions.csv')
+    plot_df = analyze_partitions()
 
     # Group by n and find the maximum n_interval for each n
     maximal_n_intervals_df = plot_df.groupby('n')['n_interval'].max().reset_index()
@@ -129,7 +129,7 @@ def plot_n_interval_spread_bar_chart():
     # also calls plotting functions from this file.
     from .analyze_prime_n_intervals import analyze_n_interval_spread
     
-    spread_df = analyze_n_interval_spread(filepath='sample/prime_partitions.csv')
+    spread_df = analyze_n_interval_spread()
 
     plt.figure(figsize=(15, 7))
     spread_df.plot(kind='bar', x='n_range', y='distinct_n_intervals_count', color='purple')
@@ -155,7 +155,7 @@ def plot_n_interval_spread_histogram():
     """
     from .analyze_prime_n_intervals import analyze_n_interval_spread
     
-    spread_df = analyze_n_interval_spread(filepath='sample/prime_partitions.csv')
+    spread_df = analyze_n_interval_spread()
 
     # Determine bin edges for distinct_n_intervals_count
     min_distinct = spread_df['distinct_n_intervals_count'].min()
@@ -191,7 +191,7 @@ def plot_n_partition_multiplicity(output_filename="sample/viz/n_partition_multip
     """
     Generates a scatter plot of n vs. the number of distinct (p, j, q, k) partitions for n.
     """
-    multiplicity_df = analyze_n_partition_multiplicity(filepath='sample/prime_partitions.csv')
+    multiplicity_df = analyze_n_partition_multiplicity()
 
     plt.figure(figsize=(15, 7))
     plt.scatter(

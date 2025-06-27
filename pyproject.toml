@@ -1,11 +1,13 @@
 [project]
 name = "factorsums"
-version = "0.1.0"
+version = "0.2.0"
 description = "A project for factor sums calculations using SageMath"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "pytest",
+    "pandas",
+    "matplotlib",
 ]
 
 [build-system]
@@ -13,4 +15,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src"] # tells setuptools to look for packages in the 'src' directory 
+where = ["src"] # tells setuptools to look for packages in the 'src' directory
+
+[tool.setuptools.package-data]
+"factorsums" = ["data/prime_partitions.csv"] 

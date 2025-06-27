@@ -3,20 +3,20 @@ import argparse
 from typing import Set, Tuple, List, Optional
 from sage.rings.integer import Integer
 
-def find_sage_sum_bases(n: int) -> Tuple[bool, Optional[Set[Tuple[Tuple['Integer', int], Tuple['Integer', int]]]]]:
+def find_sage_sum_bases(n: Integer) -> Tuple[bool, Optional[Set[Tuple['Integer', int, 'Integer', int]]]]:
     """
     Finds prime pairs (p, q) and exponents (j, k) such that p^j + q^k = n, where j, k >= 1.
     Returns:
         (is_n_prime, found_tuples):
             is_n_prime (bool): True if n is prime, False otherwise.
-            found_tuples (Set[Tuple[Tuple[Integer, int], Tuple[Integer, int]]] or None):
-                A set of canonical tuples ((prime1, exp1), (prime2, exp2)) representing
+            found_tuples (Set[Tuple[Integer, int, Integer, int]] or None):
+                A set of canonical tuples (prime1, exp1, prime2, exp2) representing
                 unique partitions. None if n is not prime.
     """
     if not n.is_prime(proof=False):
         return False, None
 
-    found_tuples: Set[Tuple[Tuple['Integer', int], Tuple['Integer', int]]] = set()
+    found_tuples: Set[Tuple['Integer', int, 'Integer', int]] = set()
 
     def get_prime_power_info(val: Integer) -> Optional[Tuple[Integer, int]]:
         if val.is_prime(proof=False):
@@ -30,30 +30,23 @@ def find_sage_sum_bases(n: int) -> Tuple[bool, Optional[Set[Tuple[Tuple['Integer
         return None
 
     # Use Sage's Partitions to find two-part partitions of n efficiently
-    for sum_pair in Partitions(n, length=2):
+    for sum_pair in Partitions(n, length=2): # Linter might incorrectly flag 'length' parameter for Sage Partitions.
+       
         e1 = sum_pair[0]
         e2 = sum_pair[1]
 
         e1_info = get_prime_power_info(e1)
         e2_info = get_prime_power_info(e2)
-
+        #the comparison actually makes sense now.
+        #we can't tell a priori which is the larger base.
         if e1_info is None or e2_info is None:
-            continue
-
-        p1, j1 = e1_info
-        p2, j2 = e2_info
-        
-        # Canonicalize the tuple to handle commutativity (p^j + q^k is same as q^k + p^j)
-        # The canonicalization ensures consistency for (prime, exponent) pairs.
-        # Partitions(n, length=2) generally returns parts in non-increasing order (e1 >= e2),
-        # which helps in canonicalization but a full canonical check is still good practice.
-        item1 = (p1, j1)
-        item2 = (p2, j2)
-        if item1 <= item2:
-            canonical_tuple = (item1, item2)
+            continue #Proceed to empty return, then next sum pair.
+        if e1_info[0] <= e2_info[0]:
+            power_tuple = (*e1_info, *e2_info)
         else:
-            canonical_tuple = (item2, item1)
-        found_tuples.add(canonical_tuple)
+            power_tuple = (*e2_info, *e1_info)
+        
+        found_tuples.add(power_tuple)
 
     return True, found_tuples
 
@@ -78,13 +71,11 @@ def main():
                 print(f"Total unique tuples found: {len(found_partitions)}")
                 print("\nDetailed partitions:")
                 # Sorting for consistent output
-                sorted_output_tuples = sorted(list(found_partitions), key=lambda x: (x[0][0], x[0][1], x[1][0], x[1][1]))
+                sorted_output_tuples = sorted(list(found_partitions))
                 
-                for canonical_pair_tuple in sorted_output_tuples:
-                    # Unpack the canonical form to print as (p, q, j, k)
-                    # The order (p,q) here is determined by the canonical sorting of (prime, exponent) pairs.
-                    term1_p, term1_j = canonical_pair_tuple[0]
-                    term2_p, term2_j = canonical_pair_tuple[1]
+                for canonical_flat_tuple in sorted_output_tuples:
+                    # Unpack the canonical flat tuple as (p1, j1, p2, j2)
+                    term1_p, term1_j, term2_p, term2_j = canonical_flat_tuple
                     
                     e1_val = term1_p**term1_j
                     e2_val = term2_p**term2_j

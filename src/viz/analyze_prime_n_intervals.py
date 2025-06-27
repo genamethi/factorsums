@@ -1,6 +1,13 @@
 import pandas as pd
+from importlib.resources import files
+from pathlib import Path
+from typing import Optional
 
-def analyze_partitions(filepath='sample/prime_partitions.csv'):
+def analyze_partitions(filepath: Optional[Path] = None):
+    # Default to bundled resource if no filepath is provided
+    if filepath is None:
+        filepath = files('factorsums.data').joinpath('prime_partitions.csv')
+
     df = pd.read_csv(filepath)
 
     # Dictionary to store the last seen n for each prime (to calculate N-intervals)
@@ -33,7 +40,7 @@ def analyze_partitions(filepath='sample/prime_partitions.csv'):
 
     return plot_df
 
-def analyze_n_interval_spread(filepath='sample/prime_partitions.csv', bin_size=1000):
+def analyze_n_interval_spread(filepath: Optional[Path] = None, bin_size=1000):
     """
     Analyzes the spread of N-interval values within specified n ranges,
     counting the number of distinct N-interval values per range.
@@ -60,10 +67,14 @@ def analyze_n_interval_spread(filepath='sample/prime_partitions.csv', bin_size=1
 
     return n_interval_spread
 
-def analyze_n_partition_multiplicity(filepath='sample/prime_partitions.csv'):
+def analyze_n_partition_multiplicity(filepath: Optional[Path] = None):
     """
     Analyzes the number of distinct (p, j, q, k) partitions for each n.
     """
+    # Default to bundled resource if no filepath is provided
+    if filepath is None:
+        filepath = files('factorsums.data').joinpath('prime_partitions.csv')
+
     df = pd.read_csv(filepath)
 
     # Filter for entries that actually have partitions
@@ -95,4 +106,5 @@ if __name__ == "__main__":
     print(f"\nTotal rows in plotting DataFrame: {len(plot_df)}")
 
     # Call the new analysis function
-    analyze_n_interval_spread() 
+    analyze_n_interval_spread()
+    analyze_n_partition_multiplicity() 
