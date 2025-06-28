@@ -1,12 +1,20 @@
 import pytest
-from sage.all import Integer, is_prime, random_prime
+from sage.all import Integer, is_prime, random_prime, primes, Primes # Added primes and Primes for new logic
 from factorsums.sage_factor_sums import find_sage_sum_bases
 from importlib.resources import files
 from pathlib import Path
 from datetime import datetime # Import datetime to find the latest data file
 import pandas as pd # Import pandas for data handling
 import random # Import random for sampling test cases
-from typing import List, Tuple, Set, Optional
+from typing import List, Tuple, Set, Optional, Any # Added Any for broader type hinting if needed
+
+# --- Configuration ---
+NUM_RANDOM_TEST_PRIMES = 100 # Number of random primes to select for each test category
+
+# Type Aliases for complex return types
+PrimeTuple = Tuple['Integer', int] # Represents a (prime, exponent) pair
+CanonicalPartition = Tuple[PrimeTuple, PrimeTuple] # Represents a canonical ((p1,j1), (p2,j2)) partition
+PartitionsSet = Set[CanonicalPartition]
 
 # Helper function to convert to Sage Integer or None
 def _convert_to_sage_int_or_none(value) -> Integer | None:
@@ -20,11 +28,8 @@ def _convert_to_sage_int_or_none(value) -> Integer | None:
     except (ValueError, TypeError):
         return None
 
-# Function to load test data from the latest CSV file
-def _load_test_data() -> Tuple[List[Integer], List[Tuple[Integer, Set[Tuple[Tuple[Integer, int], Tuple[Integer, int]]]]]]:
-    primes_no_partitions = []
-    primes_with_partitions = []
-
+# Function to load and prepare test data from the latest CSV file
+def _load_test_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     # Load data from the CSV
     data_dir = files('factorsums.data')
     latest_file = None
@@ -59,44 +64,117 @@ def _load_test_data() -> Tuple[List[Integer], List[Tuple[Integer, Set[Tuple[Tupl
 
     # Use pandas to read the CSV, handling empty strings as NaN
     # Note: The linter issue with 'converters' type definition in pandas.read_csv appears to be a persistent false positive with SageMath Integer types.
+    # Linter (Pylance) might incorrectly flag type of 'converters' or 'na_values' due to complex type inference or SageMath integration challenges. Ignored.
     df = pd.read_csv(str(csv_filepath), converters=converters, na_values='')
 
-    # Filter rows that have partitions
-    partitions_df = df[df['has_partitions']].copy()
-    # Drop rows where p, q, j, or k might be None due to _convert_to_sage_int_or_none if has_partitions is True
-    # This handles cases where data might be malformed, ensuring only valid partition rows are processed.
-    partitions_df = partitions_df.dropna(subset=['p', 'q', 'j', 'k'])
+    # Prepare df_with_partitions_for_tests
+    df_with_partitions_for_tests = df[df['has_partitions']].copy()
+    df_with_partitions_for_tests = df_with_partitions_for_tests.dropna(subset=['p', 'q', 'j', 'k'])
+    df_with_partitions_for_tests['item1'] = df_with_partitions_for_tests.apply(lambda row: (row['p'], row['j']), axis=1)
+    df_with_partitions_for_tests['item2'] = df_with_partitions_for_tests.apply(lambda row: (row['q'], row['k']), axis=1)
+    df_with_partitions_for_tests['canonical_tuple'] = df_with_partitions_for_tests.apply(lambda row: (row['item1'], row['item2']), axis=1)
 
-    # Create item1 and item2 tuples
-    # The Integer() casts are unnecessary as _convert_to_sage_int_or_none already returns Sage Integers.
-    partitions_df['item1'] = partitions_df.apply(lambda row: (row['p'], row['j']), axis=1)
-    partitions_df['item2'] = partitions_df.apply(lambda row: (row['q'], row['k']), axis=1)
+    # Consolidate canonical tuples for each n into a set for the test parameter
+    df_with_partitions_for_tests = df_with_partitions_for_tests.groupby('n').agg(
+        partitions_set=('canonical_tuple', lambda x: set(x)),
+        p=('p', 'first'), # Take the first p, j, q, k for arithmetic check if multiple partitions
+        j=('j', 'first'),
+        q=('q', 'first'),
+        k=('k', 'first'),
+    ).reset_index()
 
-    # Removed canonicalize_row function; data is already canonicalized by generate_test_data.py.
-    partitions_df['canonical_tuple'] = partitions_df.apply(lambda row: (row['item1'], row['item2']), axis=1)
+    # Prepare df_no_partitions_for_tests
+    df_no_partitions_for_tests = df[~df['has_partitions']].copy().dropna(subset=['n'])
 
-    # Group by n_val and aggregate canonical_tuple into sets
-    partitions_map = partitions_df.groupby('n')['canonical_tuple'].apply(set).to_dict()
+    print(f"Loaded {len(df_with_partitions_for_tests)} primes with partitions and "
+          f"{len(df_no_partitions_for_tests)} primes with no partitions for testing.")
 
-    # Populate PRIMES_WITH_PARTITIONS from the aggregated map
-    primes_with_partitions = [(n_val, partitions_set) for n_val, partitions_set in partitions_map.items()]
+    return df, df_with_partitions_for_tests, df_no_partitions_for_tests
 
-    # Get all 'n' values that explicitly have no partitions in the CSV
-    no_partitions_n_from_csv = df[~df['has_partitions']]['n'].unique()
+# --- Pytest Fixtures ---
+@pytest.fixture(scope="module")
+def test_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Fixture to load and prepare test data once for all tests in the module.
+    Returns a tuple: (df_full, df_with_partitions_for_tests, df_no_partitions_for_tests)
+    """
+    return _load_test_data()
 
-    # Populate PRIMES_NO_PARTITIONS by excluding primes that were found to have partitions
-    primes_no_partitions = [n for n in no_partitions_n_from_csv if n not in partitions_map]
+# --- Pytest Dynamic Test Generation Hook ---
+def pytest_generate_tests(metafunc):
+    if "n_prime_check" in metafunc.fixturenames and metafunc.function.__name__ == "test_n_is_prime":
+        df_full, _, _ = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_full['n'].unique()))
+        if num_samples > 0:
+            sampled_n = df_full['n'].sample(n=num_samples, random_state=42).tolist()
+            metafunc.parametrize("n_prime_check", sampled_n)
 
-    return primes_no_partitions, primes_with_partitions
+    if "p_prime_check" in metafunc.fixturenames and metafunc.function.__name__ == "test_p_is_prime":
+        _, df_with_parts, _ = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts['p'].dropna().unique()))
+        if num_samples > 0:
+            sampled_p = df_with_parts['p'].dropna().sample(n=num_samples, random_state=42).tolist()
+            metafunc.parametrize("p_prime_check", sampled_p)
 
-@pytest.mark.parametrize("n", PRIMES_NO_PARTITIONS)
-def test_prime_no_partitions(n):
-    is_prime, partitions = find_sage_sum_bases(n)
-    assert is_prime
+    if "q_prime_check" in metafunc.fixturenames and metafunc.function.__name__ == "test_q_is_prime":
+        _, df_with_parts, _ = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts['q'].dropna().unique()))
+        if num_samples > 0:
+            sampled_q = df_with_parts['q'].dropna().sample(n=num_samples, random_state=42).tolist()
+            metafunc.parametrize("q_prime_check", sampled_q)
+
+    if "n_no_parts" in metafunc.fixturenames and metafunc.function.__name__ == "test_find_sage_sum_bases_no_partitions":
+        _, _, df_no_parts = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_no_parts['n'].unique()))
+        if num_samples > 0:
+            sampled_n = df_no_parts['n'].sample(n=num_samples, random_state=42).tolist()
+            metafunc.parametrize("n_no_parts", sampled_n)
+
+    if "n_with_parts" in metafunc.fixturenames and "expected_partitions" in metafunc.fixturenames and metafunc.function.__name__ == "test_find_sage_sum_bases_with_partitions":
+        _, df_with_parts, _ = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts))
+        if num_samples > 0:
+            sampled_rows = df_with_parts.sample(n=num_samples, random_state=42)
+            # Parameters will be (n, partitions_set)
+            params = list(sampled_rows.apply(lambda row: (row['n'], row['partitions_set']), axis=1))
+            metafunc.parametrize("n_with_parts, expected_partitions", params)
+
+    if "n_arith" in metafunc.fixturenames and "p_arith" in metafunc.fixturenames and "q_arith" in metafunc.fixturenames and metafunc.function.__name__ == "test_arithmetic_check_p_j_q_k_equals_n":
+        _, df_with_parts, _ = metafunc.getfixturevalue("test_data")
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts))
+        if num_samples > 0:
+            sampled_rows = df_with_parts.sample(n=num_samples, random_state=42)
+            # Parameters will be (n, p, q, j, k)
+            params = list(sampled_rows.apply(lambda row: (row['n'], row['p'], row['q'], row['j'], row['k']), axis=1))
+            metafunc.parametrize("n_arith, p_arith, q_arith, j_arith, k_arith", params)
+
+# --- Test Functions ---
+
+def test_n_is_prime(n_prime_check: Integer):
+    """Verifies that 'n' values in the dataset are prime."""
+    # Linter might incorrectly flag 'is_prime' on 'n_prime_check'
+    assert n_prime_check.is_prime(proof=True)
+
+def test_p_is_prime(p_prime_check: Integer):
+    """Verifies that 'p' values in partitions are prime."""
+    assert p_prime_check.is_prime(proof=True)
+
+def test_q_is_prime(q_prime_check: Integer):
+    """Verifies that 'q' values in partitions are prime."""
+    assert q_prime_check.is_prime(proof=True)
+
+def test_find_sage_sum_bases_no_partitions(n_no_parts: Integer):
+    """Verifies find_sage_sum_bases returns no partitions for primes that should have none."""
+    is_n_prime, partitions = find_sage_sum_bases(n_no_parts)
+    assert is_n_prime
     assert partitions == set()
 
-@pytest.mark.parametrize("n, expected_partitions", PRIMES_WITH_PARTITIONS)
-def test_primes_with_partitions(n, expected_partitions):
-    is_prime, partitions = find_sage_sum_bases(n)
-    assert is_prime
-    assert partitions == expected_partitions
+def test_find_sage_sum_bases_with_partitions(n_with_parts: Integer, expected_partitions: PartitionsSet):
+    """Verifies find_sage_sum_bases returns correct partitions for primes that should have them."""
+    is_n_prime, actual_partitions = find_sage_sum_bases(n_with_parts)
+    assert is_n_prime
+    assert actual_partitions == expected_partitions
+
+def test_arithmetic_check_p_j_q_k_equals_n(n_arith: Integer, p_arith: Integer, q_arith: Integer, j_arith: int, k_arith: int):
+    """Verifies the arithmetic relationship p^j + q^k = n for partitioned primes."""
+    assert p_arith**j_arith + q_arith**k_arith == n_arith
