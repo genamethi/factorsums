@@ -1,0 +1,116 @@
+# Project Context and Development Guidelines
+
+# This file summarizes key aspects of the 'factorsums' project, its environment,
+# and development practices. It is intended to be sourced by .cursorrules to
+# provide context to the chat agent and other developers.
+
+# Written by Eric Page with edits and suggestions from the chat agent.
+
+-Tech stack is currently micromamba for project management
+--alias for micromamba is set in shell file, should always work as `mm`
+---For example "mm activate factorsums" should work
+----In fact, chat agent SHOULD ALWAYS run "mm activate factorsums" at the beginning of a session.
+----If ever in doubt about the environment, run "mm info" and "mm list"
+----Note for sage10.6 (which was downloaded with micromamba, as were all other packages) we have pinned python 3.13, even though, 3.14 is released, it is not compatible with sage at the time of writing (June, 25 2024).
+
+-The project is (circa 6/25/24) being made into a reusable python module.
+--Current `tree -L 3` output:
+```
+.
+├── archive
+│   ├── basesearch_instructions.txt
+│   ├── conventions.md
+│   ├── instructions.txt
+│   ├── __pycache__
+│   │   └── test_find_sum_bases.cpython-312-pytest-8.4.1.pyc
+│   ├── README.md
+│   ├── src
+│   │   ├── find_sum_bases.py
+│   │   ├── number_partition.py
+│   │   └── prime_utils.py
+│   ├── tests
+│   │   ├── test_find_sum_bases.py
+│   │   ├── test_number_partition.py
+│   │   └── test_prime_utils.py
+│   └── viz
+│       └── plot_sum_bases.py
+├── env.yaml
+├── __pycache__
+│   └── generate_test_data.cpython-312.pyc
+├── pyproject.toml
+├── pytest.ini
+├── sample
+│   ├── frequency_of_zero_counts_by_range.csv
+│   ├── prime_partitions.csv
+│   ├── viz
+│   │   ├── frequency_of_zero_counts_bar_chart_by_range.png
+│   │   ├── n_interval_spread_bar_chart.png
+│   │   ├── n_interval_spread_histogram.png
+│   │   ├── n_partition_multiplicity_plot.png
+│   │   ├── prime_gaps_plot.png
+│   │   ├── prime_n_intervals_maximal_0_9999.png
+│   │   ├── prime_n_intervals_maximal_100000_109999.png
+│   │   ├── prime_n_intervals_maximal_10000_19999.png
+│   │   ├── prime_n_intervals_maximal_20000_29999.png
+│   │   ├── prime_n_intervals_maximal_30000_39999.png
+│   │   ├── prime_n_intervals_maximal_40000_49999.png
+│   │   ├── prime_n_intervals_maximal_50000_59999.png
+│   │   ├── prime_n_intervals_maximal_60000_69999.png
+│   │   ├── prime_n_intervals_maximal_70000_79999.png
+│   │   ├── prime_n_intervals_maximal_80000_89999.png
+│   │   ├── prime_n_intervals_maximal_90000_99999.png
+│   │   ├── prime_n_intervals_maximal_plot.png
+│   │   ├── prime_n_intervals_plot.png
+│   │   ├── prime_partitions_count_plot.png
+│   │   └── zero_partitions_frequency_bar_chart.png
+│   ├── zero_partitions_frequency_by_digits.csv
+│   └── zero_partitions_frequency.csv
+├── skeleton
+│   ├── number_partition_skeleton.py
+│   └── prime_utils_skeleton.py
+├── src
+│   ├── factorsums
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── data
+│   │   │   └── prime_partitions.csv
+│   │   └── sage_factor_sums.py
+│   ├── factorsums.egg-info
+│   │   ├── dependency_links.txt
+│   │   ├── PKG-INFO
+│   │   ├── requires.txt
+│   │   ├── SOURCES.txt
+│   │   └── top_level.txt
+│   └── viz
+│       ├── analyze_prime_n_intervals.py
+│       ├── __init__.py
+│       ├── plot_prime_n_intervals.py
+│       ├── plot_prime_squares.py
+│       └── __pycache__
+└── tests
+    ├── generate_test_data.py
+    ├── __pycache__
+    │   ├── test_find_sum_bases.cpython-312-pytest-8.4.1.pyc
+    │   ├── test_number_partition.cpython-312-pytest-8.4.1.pyc
+    │   ├── test_prime_utils.cpython-312-pytest-8.4.1.pyc
+    │   └── test_sage_factor_sums.cpython-312-pytest-8.4.1.pyc
+    └── test_sage_factor_sums.py
+```
+--Note the `env.yaml` and `pyproject.toml` files and their contents:
+---`env.yaml` specifies the `factor_sums` conda environment with a comprehensive list of dependencies, including `sage=10.6`, `python=3.12.0`, `pandas`, `matplotlib`, and various scientific computing libraries. The prefix is `/home/erpage159/micromamba/envs/factor_sums`.
+---`pyproject.toml` defines the project `factorsums` (version `0.2.0`), its description, `README.md`, Python requirement (`>=3.8`), and key dependencies (`pytest`, `pandas`, `matplotlib`). It uses `setuptools` as the build backend and looks for packages in the `src` directory.
+--The `archive` folder has some deprecated, but not necessarily replaced code. We hope to make sure all this functionality is ported to the sage version in time, but much of it is irrelevant (`Partitions(n, len=2)` handles a lot, as does `is_prime` (general and method)).
+
+-The linter in Cursor has issues with Sagemath. Comments will be added for persistent errors.
+--One significant example that recurs is with `n.is_prime(proof=True)` being unknown to the linter. A comment should indicate this as to not confuse any future chat agents.
+--Any new linter errors that occur with otherwise documented Sage functionality can be ignored, but a comment must be added.
+
+-Currently, test data for `tests/test_sage_factor_sums.py` is created by `tests/generate_test_data.py`.
+--This script now generates data for up to 5000 primes. Larger datasets will be generated on a more powerful desktop.
+--When `generate_test_data.py` is run, it checks for an existing `prime_partitions.csv` in `src/factorsums/data/`.
+---If found, it renames the existing file to `prime_partitions_ARCHIVED_YYYYMMDD_HHMMSS.csv` and moves it to a new `archive/data/` directory (which will be created if it doesn't exist).
+--The newly generated file in `src/factorsums/data/` will be named dynamically as `{num_primes}primes_YYYYMMDD.csv` (e.g., `5000primes_20240726.csv`). This is intended to be a bundled resource for package distribution and to avoid initial generation time on other machines.
+
+-Different development environments are being used, but most are the latest version of Cursor with a preference for `gemini-2.5-flash`. Debian 13 (trixie still in testing on 6/25/24) with optional sid packages is my main OS, but I also run on Windows 11 Preview (latest typically) and MacOS Cursor. NeoVim dev version is often used. `zsh` is my main shell, but `bash` is always present. Usually, I'll note the number of cores I'm using with the agent, but feel free to request a stat to check. 
+
+# -Breaking changes 
