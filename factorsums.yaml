@@ -416,7 +416,5 @@ dependencies:
   - zn_poly=0.9.2=h9202a9a_0
   - zstandard=0.23.0=py312h66e93f0_2
   - zstd=1.5.7=hb8e6e7a_2
-  - pip:
-    - factorsums==0.2.0
 
 prefix: "/home/erpage159/fluid/micromamba/envs/factorsums"

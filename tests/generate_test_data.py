@@ -1,3 +1,4 @@
+import ast # Import for literal_eval
 import csv
 import os
 import argparse
@@ -60,8 +61,8 @@ def _chunks(lst: List[int], n: int) -> Iterator[List[int]]:
 def generate_test_data(num_primes: int = 1000):
     """
     Generates a CSV file containing prime partitions for the first `num_primes` primes.
-    Each row in the CSV represents a partition n = p^j + q^k.
-    If a prime has no partitions, it will still be included with empty partition details.
+    Each row in the CSV represents a unique prime `n`, with a list of its partitions.
+    If a prime has no partitions, its partition list will be empty.
     Old data files will be archived.
     """
     data_dir = "src/factorsums/data/"
@@ -90,7 +91,7 @@ def generate_test_data(num_primes: int = 1000):
 
     BATCH_SIZE = 1000 # Define batch size here
 
-    all_raw_rows = [] # New list to collect all raw data rows before DataFrame conversion
+    n_data_map = {} # Dictionary to collect data per unique prime n
 
     print(f"Generating partitions for the first {num_primes} primes...")
     P = Primes() # type: ignore # Linter might incorrectly flag Primes as undefined.
@@ -106,37 +107,83 @@ def generate_test_data(num_primes: int = 1000):
     print(f"Using {num_processes} processes for generation with batch size {BATCH_SIZE}.")
 
     batch_start_time = time.time()
-    total_batches = (len(primes_to_process) + BATCH_SIZE - 1) // BATCH_SIZE # Calculate total number of batches
+    total_batches = (len(primes_to_process) + BATCH_SIZE - 1) // BATCH_SIZE
 
     with multiprocessing.Pool(processes=num_processes) as pool:
         for batch_index, batch_results in enumerate(pool.imap_unordered(_find_sum_bases_for_generation, _chunks(primes_to_process, BATCH_SIZE))):
             for n_val, partitions in batch_results:
-                if partitions:
-                    for canonical_tuple in partitions:
-                        p, j, q, k = canonical_tuple
-                        all_raw_rows.append({'n': n_val, 'has_partitions': True, 'p': p, 'q': q, 'j': j, 'k': k})
-                else:
-                    all_raw_rows.append({'n': n_val, 'has_partitions': False, 'p': None, 'q': None, 'j': None, 'k': None}) # Use None for empty cells
-            
+                # Store all partitions for this n_val as a sorted list of tuples
+                partitions_list = sorted(list(partitions)) if partitions else []
+                n_data_map[n_val] = {
+                    'n': n_val,
+                    'has_partitions': bool(partitions_list), # True if partitions exist, False otherwise
+                    'partitions_data': partitions_list # Store the list of (p,j,q,k) tuples
+                }
+                
             # Progress reporting after each batch (for generation phase)
             batch_end_time = time.time()
             elapsed_batch_time = batch_end_time - batch_start_time
             
             current_processed_primes = min((batch_index + 1) * BATCH_SIZE, num_primes)
             print(f"Generated data for {current_processed_primes}/{num_primes} primes in {elapsed_batch_time:.2f} seconds ({batch_index + 1}/{total_batches} batches).")
-            batch_start_time = time.time() # Reset for next batch
+            batch_start_time = time.time()
 
     print(f"Finished generating all data for {num_primes} primes. Converting to DataFrame and writing to CSV...")
-    # Convert list of dictionaries to DataFrame
-    df = pd.DataFrame(all_raw_rows)
-    # Ensure columns are in the desired order
-    df = df[['n', 'has_partitions', 'p', 'q', 'j', 'k']]
     
-    # Write DataFrame to CSV
-    df.to_csv(output_filename, index=False, na_rep='') # na_rep='' handles None as empty strings in CSV
+    # Convert map of n data to list of dictionaries for DataFrame creation
+    all_rows_for_df = list(n_data_map.values())
+
+    # Create DataFrame
+    df = pd.DataFrame(all_rows_for_df)
+    
+    # Add 'n_rank' column
+    P_primes = Primes() # Re-instantiate Primes for rank method
+    df['n_rank'] = df['n'].apply(lambda x: P_primes.rank(Integer(x), proof=False)) # type: ignore # Linter might incorrectly flag missing 'proof' argument or unknown method for Sage Integer.
+
+    # Sort the DataFrame by 'n' for consistent output
+    df = df.sort_values(by=['n']).reset_index(drop=True)
+    
+    # Ensure columns are in a desired order
+    df = df[['n', 'n_rank', 'has_partitions', 'partitions_data']]
+    
+    # Write comment header to the CSV file first
+    with open(output_filename, 'w') as f:
+        f.write(f"# Total primes in this file: {num_primes}\n")
+
+    # Write DataFrame to CSV (append mode to add after the comment)
+    # na_rep='' handles None as empty strings in CSV
+    df.to_csv(output_filename, index=False, na_rep='', mode='a') 
 
     print(f"Test data generated and saved to {output_filename}")
     return output_filename
+
+def csv_to_pkl(csv_filepath: str, pkl_filepath: str):
+    """
+    Converts a CSV file generated by generate_test_data.py to a Parquet file.
+    This handles the literal evaluation of the 'partitions_data' column.
+    """
+    try:
+        # Read the CSV file
+        df = pd.read_csv(csv_filepath)
+        
+        # Convert 'partitions_data' column from string representation of list/tuple to actual list/tuple
+        # Use errors='coerce' to turn any parsing errors into NaN, which can be dropped or handled.
+        df['partitions_data'] = df['partitions_data'].apply(lambda x: ast.literal_eval(x) if pd.notna(x) and x != '' else [])
+        
+        # Convert n, p, q, j, k columns to Sage Integers where applicable
+        # Need to iterate through the list of tuples in 'partitions_data' and convert their elements
+        # This part requires careful handling of the nested structure.
+        # For simplicity in this direct conversion, we'll assume the Sage Integer conversion happens post-explode
+        # or rely on the fact that these are raw ints/floats in the CSV and can be converted later.
+        # The primary goal here is to get the list-of-tuples back as actual Python objects.
+
+        # Save to pickle
+        df.to_pickle(pkl_filepath)
+        print(f"Successfully converted {csv_filepath} to {pkl_filepath}")
+    except FileNotFoundError:
+        print(f"Error: CSV file not found at {csv_filepath}")
+    except Exception as e:
+        print(f"An error occurred during conversion: {e}")
 
 def _convert_to_sage_int_or_none(value):
     """
