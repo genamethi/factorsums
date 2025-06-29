@@ -11,6 +11,7 @@
 ---For example "mm activate factorsums" should work
 ----In fact, chat agent SHOULD ALWAYS run "mm activate factorsums" at the beginning of a session.
 ----If ever in doubt about the environment, run "mm info" and "mm list"
+----Once the environment is active, set up the editable install for local development: `pip install --no-build-isolation --no-deps -e .`
 ----Note for sage10.6 (which was downloaded with micromamba, as were all other packages) we have pinned python 3.13, even though, 3.14 is released, it is not compatible with sage at the time of writing (June, 25 2024).
 
 -The project is (circa 6/25/24) being made into a reusable python module.
