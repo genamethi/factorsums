@@ -36,7 +36,7 @@ ENV/
 # Project specific
 .cursor/
 .cursorignore
-.cursorrules
+
 .specstory/
 .pytest_cache/
 ./src/model
