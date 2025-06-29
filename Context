@@ -103,6 +103,7 @@
 
 -The linter in Cursor has issues with Sagemath. Comments will be added for persistent errors.
 --One significant example that recurs is with `n.is_prime(proof=True)` being unknown to the linter. A comment should indicate this as to not confuse any future chat agents.
+--Another persistent linter error occurs when using `Primes().rank(Integer(x), proof=False)`, where the linter expects a `proof` argument for a `Python int`, even after explicit casting to `Sage Integer`. This can be safely ignored with `# type: ignore`.
 --Any new linter errors that occur with otherwise documented Sage functionality can be ignored, but a comment must be added.
 
 -Currently, test data for `tests/test_sage_factor_sums.py` is created by `tests/generate_test_data.py`.
@@ -110,7 +111,34 @@
 --When `generate_test_data.py` is run, it checks for an existing `prime_partitions.csv` in `src/factorsums/data/`.
 ---If found, it renames the existing file to `prime_partitions_ARCHIVED_YYYYMMDD_HHMMSS.csv` and moves it to a new `archive/data/` directory (which will be created if it doesn't exist).
 --The newly generated file in `src/factorsums/data/` will be named dynamically as `{num_primes}primes_YYYYMMDD.csv` (e.g., `5000primes_20240726.csv`). This is intended to be a bundled resource for package distribution and to avoid initial generation time on other machines.
+--*Recent change:* Data is now collected entirely in memory as a list of dictionaries, then converted to a Pandas DataFrame, and finally written to CSV using `df.to_csv()`. This reduces frequent disk I/O during generation.
+--*Future Plan:* A `csv_to_pkl` function will be added to convert the generated CSV to a more efficient binary Pickle format for remote users and optimized loading, handling the parsing of nested `partitions_data` via `ast.literal_eval`.
 
 -Different development environments are being used, but most are the latest version of Cursor with a preference for `gemini-2.5-flash`. Debian 13 (trixie still in testing on 6/25/24) with optional sid packages is my main OS, but I also run on Windows 11 Preview (latest typically) and MacOS Cursor. NeoVim dev version is often used. `zsh` is my main shell, but `bash` is always present. Usually, I'll note the number of cores I'm using with the agent, but feel free to request a stat to check. 
 
 # -Breaking changes 
+
+# Future Data Storage and Testing Enhancements (TODO)
+
+This section outlines potential future improvements for test data storage and consumption, aiming for better structure, scalability, and testability.
+
+- [ ] **Restructure Stored Data for `generate_test_data.py` output:**
+    - **Current:** Each row in the CSV represents a unique prime `n`, with a string-serialized list of `(p,j,q,k)` partitions in a `partitions_data` column.
+    - **Proposed:** While the current CSV format serves human readability, for machine-consumption and improved testing efficiency, investigate alternative storage formats and in-memory structures.
+        - **Option A: Pandas `groupby` and `explode` for testing:**
+            - Data can be grouped by `n` during generation (as currently done with `n_data_map`).
+            - On load into Pandas, the `partitions_data` column (containing lists of `(p,j,q,k)` tuples) can be `df.explode()`'d to create a flattened DataFrame where each partition gets its own row.
+            - This flattened DataFrame can then be used to create a `MultiIndex` (e.g., `df.set_index(['n', 'p', 'q'])`) for hierarchical access during testing, which aligns with the "n's index a set of rows" idea (representing levels of a young lattice).
+            - This avoids repeated parsing of nested strings during testing and allows for vectorized operations on the exploded data.
+        - **Option B: Alternative Storage Formats for Primary Data:**
+            - **Python Pickle (`.pkl`):** Ideal for directly saving and loading Pandas DataFrames or Python objects (like `n_data_map` itself) that contain nested structures. Offers excellent type preservation and fast I/O within Python. Not human-readable. A `csv_to_pkl` utility function could be provided for distribution/remote users.
+            - **HDF5 / Parquet:** Advanced binary columnar formats, highly efficient for large, structured datasets. Excellent for analytics and cross-language interoperability. May require more careful handling for truly nested data within a column (e.g., explicitly structuring the nested part as JSON strings or using Arrow's list types if compatible with Pandas' Parquet writer), or flattening the data completely before saving. Considered for very large scale.
+            - **"Ditto" (Semi-Flattened CSV):** A custom, semi-flattened CSV format where `n` and `n_rank` are repeated only when they change, with "ditto" or blank values for repeated `n` values within a group of partitions. This is primarily for human readability and would require custom writing/reading logic.
+
+- [ ] **Add Derived Per-Partition Information (post-`explode`):**
+    - **`p_rank`, `q_rank`:** Add columns for the prime rank of `p` and `q` for each partition.
+    - **Arithmetic String:** Include a string representation like "p^j + q^k = n" for each partition (e.g., "2^1 + 3^1 = 5").
+    - **Implementation Note:** These are properties of *individual partitions*. If using the grouped `n` structure, these columns would best be derived *after* loading the data into Pandas and "exploding" the `partitions_data` column back into separate rows using `df.explode('partitions_data')`. This allows vectorized calculation of these new columns.
+
+- [ ] **Ensure Consistent Sorting:**
+    - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 

@@ -1,68 +1,61 @@
 import csv
 import os
-import argparse # Add argparse for command-line arguments
-import time # Import time module for performance measurement
-import multiprocessing # Import multiprocessing for parallel execution
-from sage.all import Integer, is_prime, Primes, primes, Partitions # Import primes (lowercase) for efficient iteration
-# from factorsums.sage_factor_sums import find_sage_sum_bases # REMOVED: Duplicating logic for independence
-from typing import Tuple, Optional, Set
-from datetime import datetime # For timestamping files
-import shutil # For moving files
-import pandas as pd # Import pandas for data handling
+import argparse
+import time
+import multiprocessing
+from sage.all import Integer, is_prime, Primes, primes, Partitions
+from typing import Tuple, Optional, Set, List, Iterator
+from datetime import datetime
+import shutil
+import pandas as pd
 
 def _get_prime_power_info_for_generation(val: Integer) -> Optional[Tuple[Integer, int]]:
     if val.is_prime(proof=False):
         return val, 1
     
-    # Check if it's a perfect power with a prime base (exponent > 1)
     if val.is_perfect_power():
         base, exponent = val.perfect_power()
         if base.is_prime(proof=False):
-            return base, exponent
+            return (base, exponent)
     return None
 
-def _find_sum_bases_for_generation(n: int) -> Tuple[int, bool, Optional[Set[Tuple[Tuple['Integer', int], Tuple['Integer', int]]]]]:
+def _find_sum_bases_for_generation(primes_batch: List[int]) -> List[Tuple[int, Optional[Set[Tuple['Integer', int, 'Integer', int]]]]]:
     """
     Finds prime pairs (p, q) and exponents (j, k) such that p^j + q^k = n, where j, k >= 1.
     This is a duplicated and optimized version for test data generation.
+    Assumes `n` is a prime number.
+    Accepts a batch of primes and processes them.
     Returns:
-        (n, is_n_prime, found_tuples):
+        List of (n, found_tuples) for each prime in the batch:
             n (int): The number itself.
-            is_n_prime (bool): True if n is prime, False otherwise.
-            found_tuples (Set[Tuple[Tuple[Integer, int], Tuple[Integer, int]]] or None):
-                A set of canonical tuples ((prime1, exp1), (prime2, exp2)) representing
-                unique partitions. None if n is not prime.
+            found_tuples (Set[Tuple[Integer, int, Integer, int]] or None):
+                A set of canonical tuples (prime1, exp1, prime2, exp2) representing
+                unique partitions. None if no partitions are found.
     """
-    if not n.is_prime(proof=False): # Linter might incorrectly flag 'is_prime' on 'n', assuming 'n' is a Python int rather than a Sage Integer.
-        return n, False, None
+    results = []
+    for n in primes_batch:
+        found_tuples: Set[Tuple['Integer', int, 'Integer', int]] = set()
 
-    found_tuples: Set[Tuple[Tuple['Integer', int], Tuple['Integer', int]]] = set()
+        for sum_pair in Partitions(n, length=2): # Linter might not recognize 'length' parameter for Sage Partitions. # type: ignore
+            (p1, j1) = _get_prime_power_info_for_generation(sum_pair[0]) or (None, None)
+            (p2, j2) = _get_prime_power_info_for_generation(sum_pair[1]) or (None, None)
 
-    # Use Sage's Partitions to find two-part partitions of n efficiently
-    for sum_pair in Partitions(n, length=2): # Linter might not recognize 'length' parameter for Sage Partitions.
-        e1 = sum_pair[0]
-        e2 = sum_pair[1]
+            if p1 is None or p2 is None:
+                continue
 
-        e1_info = _get_prime_power_info_for_generation(e1)
-        e2_info = _get_prime_power_info_for_generation(e2)
+            if p1 <= p2:
+                canonical_flat_tuple = (p1, j1, p2, j2)
+            else:
+                canonical_flat_tuple = (p2, j2, p1, j1)
+            found_tuples.add(canonical_flat_tuple) # type: ignore [arg-type]
 
-        if e1_info is None or e2_info is None:
-            continue
+        results.append((n, found_tuples))
+    return results
 
-        p1, j1 = e1_info
-        p2, j2 = e2_info
-        
-        # Canonicalize the tuple to handle commutativity (p^j + q^k is same as q^k + p^j)
-        # The canonicalization ensures consistency for (prime, exponent) pairs.
-        item1 = (p1, j1)
-        item2 = (p2, j2)
-        if item1 <= item2:
-            canonical_tuple = (item1, item2)
-        else:
-            canonical_tuple = (item2, item1)
-        found_tuples.add(canonical_tuple)
-
-    return n, True, found_tuples
+def _chunks(lst: List[int], n: int) -> Iterator[List[int]]:
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 def generate_test_data(num_primes: int = 1000):
     """
@@ -74,17 +67,14 @@ def generate_test_data(num_primes: int = 1000):
     data_dir = "src/factorsums/data/"
     archive_dir = "archive/data/"
 
-    # Ensure data directory exists
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
-    # Archive existing .csv files in data_dir
     if os.path.exists(data_dir):
         for filename in os.listdir(data_dir):
             if filename.endswith(".csv"):
                 old_filepath = os.path.join(data_dir, filename)
                 
-                # Create archive directory if it doesn't exist
                 if not os.path.exists(archive_dir):
                     os.makedirs(archive_dir)
                 
@@ -95,56 +85,58 @@ def generate_test_data(num_primes: int = 1000):
                 print(f"Archiving existing file: {old_filepath} to {new_archive_filepath}")
                 shutil.move(old_filepath, new_archive_filepath)
 
-    # Generate new filename
     today_str = datetime.now().strftime("%Y%m%d")
     output_filename = os.path.join(data_dir, f"{num_primes}primes_{today_str}.csv")
 
-    with open(output_filename, 'w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        # Write the header row, including a column to indicate if partitions were found
-        csv_writer.writerow(['n', 'has_partitions', 'p', 'q', 'j', 'k'])
+    BATCH_SIZE = 1000 # Define batch size here
 
-        print(f"Generating partitions for the first {num_primes} primes...")
-        # Proof argument is not necessary despite linter message. This is a known linter issue with SageMath's Primes() function.
-        P = Primes() # Do not use proof=True here for faster generation
-        
-        if num_primes == 0:
-            upper_limit_prime = 0
-        else:
-            upper_limit_prime = P.unrank(num_primes - 1)
+    all_raw_rows = [] # New list to collect all raw data rows before DataFrame conversion
 
-        # Get the list of primes to process
-        primes_to_process = list(primes(upper_limit_prime + 1))
+    print(f"Generating partitions for the first {num_primes} primes...")
+    P = Primes() # type: ignore # Linter might incorrectly flag Primes as undefined.
+    
+    if num_primes == 0:
+        upper_limit_prime = 0
+    else:
+        upper_limit_prime = P.unrank(num_primes - 1)
 
-        # Determine the number of processes to use
-        num_processes = os.cpu_count() # Using all cores for now
-        print(f"Using {num_processes} processes for generation.")
+    primes_to_process = list(primes(upper_limit_prime + 1)) # type: ignore # Linter might incorrectly flag primes as undefined.
 
-        processed_count = 0
-        batch_start_time = time.time()
+    num_processes = os.cpu_count()
+    print(f"Using {num_processes} processes for generation with batch size {BATCH_SIZE}.")
 
-        with multiprocessing.Pool(processes=num_processes) as pool:
-            # Use imap_unordered to get results as they are ready
-            for n_val, is_n_prime, partitions in pool.imap_unordered(_find_sum_bases_for_generation, primes_to_process):
-                if is_n_prime:
-                    if partitions:
-                        for canonical_tuple in partitions:
-                            (p, j) = canonical_tuple[0]
-                            (q, k) = canonical_tuple[1]
-                            csv_writer.writerow([n_val, True, p, q, j, k])
-                    else:
-                        csv_writer.writerow([n_val, False, '', '', '', ''])
-                
-                processed_count += 1
-                if processed_count % 1000 == 0:
-                    batch_end_time = time.time()
-                    elapsed_batch_time = batch_end_time - batch_start_time
-                    print(f"Processed {processed_count}/{num_primes} primes in {elapsed_batch_time:.2f} seconds.")
-                    csvfile.flush()
-                    batch_start_time = time.time()
+    batch_start_time = time.time()
+    total_batches = (len(primes_to_process) + BATCH_SIZE - 1) // BATCH_SIZE # Calculate total number of batches
+
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        for batch_index, batch_results in enumerate(pool.imap_unordered(_find_sum_bases_for_generation, _chunks(primes_to_process, BATCH_SIZE))):
+            for n_val, partitions in batch_results:
+                if partitions:
+                    for canonical_tuple in partitions:
+                        p, j, q, k = canonical_tuple
+                        all_raw_rows.append({'n': n_val, 'has_partitions': True, 'p': p, 'q': q, 'j': j, 'k': k})
+                else:
+                    all_raw_rows.append({'n': n_val, 'has_partitions': False, 'p': None, 'q': None, 'j': None, 'k': None}) # Use None for empty cells
+            
+            # Progress reporting after each batch (for generation phase)
+            batch_end_time = time.time()
+            elapsed_batch_time = batch_end_time - batch_start_time
+            
+            current_processed_primes = min((batch_index + 1) * BATCH_SIZE, num_primes)
+            print(f"Generated data for {current_processed_primes}/{num_primes} primes in {elapsed_batch_time:.2f} seconds ({batch_index + 1}/{total_batches} batches).")
+            batch_start_time = time.time() # Reset for next batch
+
+    print(f"Finished generating all data for {num_primes} primes. Converting to DataFrame and writing to CSV...")
+    # Convert list of dictionaries to DataFrame
+    df = pd.DataFrame(all_raw_rows)
+    # Ensure columns are in the desired order
+    df = df[['n', 'has_partitions', 'p', 'q', 'j', 'k']]
+    
+    # Write DataFrame to CSV
+    df.to_csv(output_filename, index=False, na_rep='') # na_rep='' handles None as empty strings in CSV
 
     print(f"Test data generated and saved to {output_filename}")
-    return output_filename # Return the generated filename
+    return output_filename
 
 def _convert_to_sage_int_or_none(value):
     """
@@ -156,13 +148,10 @@ def _convert_to_sage_int_or_none(value):
     try:
         return Integer(value)
     except (ValueError, TypeError):
-        # Handle cases where value might not be convertible to Integer
-        # This should ideally not happen if data generation is correct,
-        # but provides robustness for unexpected values in CSV.
-        print(f"Warning: Could not convert \'{value}\' to Sage Integer. Returning None.")
+        print(f"Warning: Could not convert '{value}' to Sage Integer. Returning None.")
         return None
 
-def verify_test_data(filename: str): # Update function signature
+def verify_test_data(filename: str):
     """
     After we've generated the test data, we can verify the primality of p, q, and n.
     by using the is_prime(x, proof=True) method. This rigorous verification is performed on the generated data.
@@ -177,7 +166,6 @@ def verify_test_data(filename: str): # Update function signature
     """
     all_ok = True
     try:
-        # Define converters for columns to be read as Sage Integers or None for NaN/empty
         converters = {
             'n': _convert_to_sage_int_or_none,
             'p': _convert_to_sage_int_or_none,
@@ -185,25 +173,17 @@ def verify_test_data(filename: str): # Update function signature
             'j': _convert_to_sage_int_or_none,
             'k': _convert_to_sage_int_or_none,
         }
-        # Using na_values to ensure empty strings are treated as NaN before conversion
-        # Linter might incorrectly flag type of 'converters' or 'na_values' due to complex type inference or SageMath integration challenges.
-        df = pd.read_csv(filename, converters=converters, na_values='')
+        df = pd.read_csv(filename, converters=converters, na_values='') # type: ignore
     except FileNotFoundError:
         print(f"Error: File not found at {filename}")
         return False
 
-    # Initialize overall status to True
     all_ok = True
 
-    # Verification for rows with partitions
-    # Filter to only rows that have partitions and are not entirely NaN in the converted columns
     partitions_df = df[df['has_partitions']].copy()
-    # Ensure converted columns are not None for partitioned rows
     partitions_df = partitions_df.dropna(subset=['p', 'q', 'j', 'k'])
 
     if not partitions_df.empty:
-        # Primality checks for p, q, and n
-        # Linter might incorrectly flag 'apply()' as an unknown attribute.
         p_prime_check = partitions_df['p'].apply(lambda x: x.is_prime(proof=True))
         q_prime_check = partitions_df['q'].apply(lambda x: x.is_prime(proof=True))
         n_prime_check_partitions = partitions_df['n'].apply(lambda x: x.is_prime(proof=True))
@@ -218,20 +198,15 @@ def verify_test_data(filename: str): # Update function signature
             print("Warning: Some 'n' values (with partitions) are not prime.")
             all_ok = False
 
-        # Verify p^j + q^k = n
-        # Linter might incorrectly flag power operator with Sage Integers or other operations due to type inference issues.
         sum_check = (partitions_df['p']**partitions_df['j'] + partitions_df['q']**partitions_df['k'] == partitions_df['n'])
         if not sum_check.all():
             print("Warning: Some p^j + q^k != n for partitioned rows.")
             all_ok = False
 
-    # Verification for rows without partitions (n should still be prime)
     no_partitions_df = df[~df['has_partitions']].copy()
-    # Ensure 'n' is not None for non-partitioned rows
     no_partitions_df = no_partitions_df.dropna(subset=['n'])
 
     if not no_partitions_df.empty:
-        # Linter might incorrectly flag 'apply()' as an unknown attribute.
         n_prime_check_no_partitions = no_partitions_df['n'].apply(lambda x: x.is_prime(proof=True))
         if not n_prime_check_no_partitions.all():
             print("Warning: Some 'n' values (without partitions) are not prime.")
@@ -244,6 +219,5 @@ if __name__ == "__main__":
     parser.add_argument('--num_primes', type=int, default=5000, help='Number of primes to generate test data for.')
     args = parser.parse_args()
 
-    # Use the argument for generating test data, and capture the generated filename
     generated_filepath = generate_test_data(num_primes=args.num_primes)
     verify_test_data(filename=generated_filepath)  
