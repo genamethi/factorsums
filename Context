@@ -146,3 +146,5 @@ This section outlines potential future improvements for test data storage and co
 
 - [ ] **Ensure Consistent Sorting:**
     - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 
+
+- [ ] **Investigate `prime_range` vs `primes`:** Research the performance and memory implications of using `prime_range` to generate the initial list of primes, as it may be more direct and semantically clear than `list(primes(...))`. 
