@@ -14,6 +14,8 @@
 ----Once the environment is active, set up the editable install for local development: `pip install --no-build-isolation --no-deps -e .`
 ----Note for sage10.6 (which was downloaded with micromamba, as were all other packages) we have pinned python 3.13, even though, 3.14 is released, it is not compatible with sage at the time of writing (June, 25 2024).
 
+*Pickle format (`.pkl`) is generally expected to preserve SageMath object types (e.g., `Integer`) directly upon loading. This has been tested on a limited basis.*
+
 -The project is (circa 6/25/24) being made into a reusable python module.
 --Current `tree -L 3` output:
 ```
@@ -133,6 +135,7 @@ This section outlines potential future improvements for test data storage and co
             - This avoids repeated parsing of nested strings during testing and allows for vectorized operations on the exploded data.
         - **Option B: Alternative Storage Formats for Primary Data:**
             - **Python Pickle (`.pkl`):** Ideal for directly saving and loading Pandas DataFrames or Python objects (like `n_data_map` itself) that contain nested structures. Offers excellent type preservation and fast I/O within Python. Not human-readable. A `csv_to_pkl` utility function could be provided for distribution/remote users.
+                -* Ideally, we will create a systematic way to ensure integrity of types when pickling, but this is low priority*
             - **HDF5 / Parquet:** Advanced binary columnar formats, highly efficient for large, structured datasets. Excellent for analytics and cross-language interoperability. May require more careful handling for truly nested data within a column (e.g., explicitly structuring the nested part as JSON strings or using Arrow's list types if compatible with Pandas' Parquet writer), or flattening the data completely before saving. Considered for very large scale.
             - **"Ditto" (Semi-Flattened CSV):** A custom, semi-flattened CSV format where `n` and `n_rank` are repeated only when they change, with "ditto" or blank values for repeated `n` values within a group of partitions. This is primarily for human readability and would require custom writing/reading logic.
 

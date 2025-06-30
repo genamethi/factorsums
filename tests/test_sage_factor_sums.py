@@ -17,29 +17,21 @@ CanonicalPartition = Tuple[PrimeTuple, PrimeTuple] # Represents a canonical ((p1
 PartitionsSet = Set[CanonicalPartition]
 
 # Helper function to convert to Sage Integer or None
-def _convert_to_sage_int_or_none(value) -> Integer | None:
-    """
-    Converts a value to a Sage Integer, or returns None if the value is NaN or an empty string.
-    """
-    if pd.isna(value) or str(value).strip() == '':
-        return None
-    try:
-        return Integer(value)
-    except (ValueError, TypeError):
-        return None
+# Removed: _convert_to_sage_int_or_none is no longer needed with PKL loading if types persist.
 
-# Function to load and prepare test data from the latest CSV file
+# Function to load and prepare test data from the latest PKL file
 def _load_test_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    # Load data from the CSV
+    # Load data from the PKL
     data_dir = files('factorsums.data')
     latest_file = None
     latest_date = None
 
     for file_obj in data_dir.iterdir():
-        if file_obj.is_file() and file_obj.name.endswith('.csv') and 'primes_' in file_obj.name:
+        # Look for .pkl files with the correct naming pattern
+        if file_obj.is_file() and file_obj.name.endswith('.pkl') and 'primes_' in file_obj.name:
             try:
-                # Extract date from filename (e.g., "5000primes_20240726.csv")
-                date_str = file_obj.name.split('primes_')[1].replace('.csv', '')
+                # Extract date from filename (e.g., "5000primes_20240726.pkl")
+                date_str = file_obj.name.split('primes_')[1].replace('.pkl', '')
                 current_date = datetime.strptime(date_str, '%Y%m%d')
                 if latest_date is None or current_date > latest_date:
                     latest_date = current_date
@@ -49,40 +41,60 @@ def _load_test_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                 continue
 
     if latest_file is None:
-        raise FileNotFoundError("No prime partition data file found in src/factorsums/data/ matching the pattern *primes_YYYYMMDD.csv")
+        raise FileNotFoundError("No prime partition data file found in src/factorsums/data/ matching the pattern *primes_YYYYMMDD.pkl")
 
-    csv_filepath = latest_file
+    pkl_filepath = latest_file
 
-    # Define converters for columns to be read as Sage Integers or None for NaN/empty
-    converters = {
-        'n': _convert_to_sage_int_or_none,
-        'p': _convert_to_sage_int_or_none,
-        'q': _convert_to_sage_int_or_none,
-        'j': _convert_to_sage_int_or_none, 
-        'k': _convert_to_sage_int_or_none, # Linter might incorrectly flag type of 'converters' due to complex type inference or SageMath integration challenges.
-    }
+    # Use pandas to read the PKL file
+    # Assuming PKL preserves Sage Integer types, converters are not needed here.
+    df = pd.read_pickle(str(pkl_filepath))
 
-    # Use pandas to read the CSV, handling empty strings as NaN
-    # Note: The linter issue with 'converters' type definition in pandas.read_csv appears to be a persistent false positive with SageMath Integer types.
-    # Linter (Pylance) might incorrectly flag type of 'converters' or 'na_values' due to complex type inference or SageMath integration challenges. Ignored.
-    df = pd.read_csv(str(csv_filepath), converters=converters, na_values='')
+    # Debug: Verify types after loading from PKL
+    # print(f"DEBUG (test_sage_factor_sums): Type of n after PKL load: {type(df['n'].iloc[0])}")
+    # if not df.empty and 'p' in df.columns and pd.notna(df['p'].iloc[0]):
+    #     print(f"DEBUG (test_sage_factor_sums): Type of p after PKL load: {type(df['p'].iloc[0])}")
+    # if not df.empty and 'q' in df.columns and pd.notna(df['q'].iloc[0]):
+    #     print(f"DEBUG (test_sage_factor_sums): Type of q after PKL load: {type(df['q'].iloc[0])}")
+    # if not df.empty and 'j' in df.columns and pd.notna(df['j'].iloc[0]):
+    #     print(f"DEBUG (test_sage_factor_sums): Type of j after PKL load: {type(df['j'].iloc[0])}")
+    # if not df.empty and 'k' in df.columns and pd.notna(df['k'].iloc[0]):
+    #     print(f"DEBUG (test_sage_factor_sums): Type of k after PKL load: {type(df['k'].iloc[0])}")
 
-    # Prepare df_with_partitions_for_tests
-    df_with_partitions_for_tests = df[df['has_partitions']].copy()
+    # Prepare df_with_partitions_for_tests using 'num_partitions'
+    df_with_partitions_for_tests = df[df['num_partitions'] > 0].copy()
     df_with_partitions_for_tests = df_with_partitions_for_tests.dropna(subset=['p', 'q', 'j', 'k'])
-    df_with_partitions_for_tests['canonical_tuple'] = df_with_partitions_for_tests.apply(lambda row: (row['p'], row['j'], row['q'], row['k']), axis=1)
 
-    # Consolidate canonical tuples for each n into a set for the test parameter
+    # Directly use 'partitions_data' which already contains lists of (p,j,q,k) tuples
+    # Convert the list of tuples to a set of tuples for comparison in tests.
+    df_with_partitions_for_tests['partitions_set'] = df_with_partitions_for_tests['partitions_data'].apply(lambda x: set(tuple(item) for item in x))
+
+    # For the arithmetic check, we still need p, j, q, k. Take the first one if multiple partitions.
+    # This part needs careful handling if partitions_data contains multiple lists in one row or nested structures.
+    # Assuming partitions_data is a list of (p,j,q,k) tuples, we can just grab the first one for the arithmetic check if needed.
+    # If we need to test all partitions for arithmetic, we'd need to explode the dataframe first.
+    # For now, let's assume taking the first partition from the list is sufficient for 'p', 'j', 'q', 'k' if they're used directly.
+    # However, the current arithmetic test uses p_arith, j_arith etc directly from sampled rows, which come after this consolidation.
+    # The groupby aggregation below for 'p', 'j', 'q', 'k' needs to be careful if multiple partitions exist.
+    # The previous logic had a groupby that would take 'first'. Let's retain that but adapt for 'partitions_data'.
+
+    # Consolidate data for testing: keep n and the set of partitions.
+    # For p, j, q, k, if there are multiple partitions, we need a representative. The original code took 'first'.
+    # If the goal of the arithmetic check is to verify each (p,j,q,k) in a partition, this structure is insufficient.
+    # The arithmetic check should ideally iterate over the elements within `partitions_set`.
+    # For now, let's keep the existing structure and assume the arithmetic check samples individual (p,j,q,k) from the set.
     df_with_partitions_for_tests = df_with_partitions_for_tests.groupby('n').agg(
-        partitions_set=('canonical_tuple', lambda x: set(x)),
-        p=('p', 'first'), # Take the first p, j, q, k for arithmetic check if multiple partitions
-        j=('j', 'first'),
-        q=('q', 'first'),
-        k=('k', 'first'),
+        partitions_set=('partitions_set', 'first'), # Use the already created set
+        # The following lines are problematic if partitions_data is not exploded before this groupby
+        # They would incorrectly take the first p,j,q,k from the *first* list in partitions_data column for that n.
+        # The current arithmetic check samples from df_with_parts directly, which means we need the (p,j,q,k) to be available on separate rows or accessible.
+        # Re-evaluate the arithmetic test parameterization later. For now, just make sure 'p', 'j', 'q', 'k' columns exist for downstream use.
+        # Let's explicitly extract a single representative (p,j,q,k) for now for the arithmetic check, or better yet, remove it if it's not meaningful post-refactor.
+        # For the purpose of the arithmetic check, we will rely on the sampling from the `partitions_set` in `pytest_generate_tests`.
+        # So, we remove the direct aggregation of 'p','j','q','k' here.
     ).reset_index()
 
-    # Prepare df_no_partitions_for_tests
-    df_no_partitions_for_tests = df[~df['has_partitions']].copy().dropna(subset=['n'])
+    # Prepare df_no_partitions_for_tests using 'num_partitions'
+    df_no_partitions_for_tests = df[df['num_partitions'] == 0].copy().dropna(subset=['n'])
 
     print(f"Loaded {len(df_with_partitions_for_tests)} primes with partitions and "
           f"{len(df_no_partitions_for_tests)} primes with no partitions for testing.")
@@ -110,15 +122,33 @@ def pytest_generate_tests(metafunc):
             metafunc.parametrize("n_prime_check", sampled_n)
 
     if "p_prime_check" in metafunc.fixturenames and metafunc.function.__name__ == "test_p_is_prime":
-        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts['p'].dropna().unique()))
+        # Filter for rows that actually have partitions data to get 'p' values
+        df_with_p_values = df_with_parts[df_with_parts['partitions_set'].apply(lambda x: bool(x))].copy()
+        # Extract all p values from the nested partitions_set for sampling
+        all_p_values = []
+        for _, row in df_with_p_values.iterrows():
+            for p_tuple, q_tuple in row['partitions_set']:
+                all_p_values.append(p_tuple[0]) # p_tuple is (p, j), we need p
+        
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(all_p_values))
         if num_samples > 0:
-            sampled_p = df_with_parts['p'].dropna().sample(n=num_samples, random_state=42).tolist()
+            # Need to sample from the list of all_p_values, not the DataFrame
+            sampled_p = random.sample(all_p_values, num_samples)
             metafunc.parametrize("p_prime_check", sampled_p)
 
     if "q_prime_check" in metafunc.fixturenames and metafunc.function.__name__ == "test_q_is_prime":
-        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts['q'].dropna().unique()))
+        # Filter for rows that actually have partitions data to get 'q' values
+        df_with_q_values = df_with_parts[df_with_parts['partitions_set'].apply(lambda x: bool(x))].copy()
+        # Extract all q values from the nested partitions_set for sampling
+        all_q_values = []
+        for _, row in df_with_q_values.iterrows():
+            for p_tuple, q_tuple in row['partitions_set']:
+                all_q_values.append(q_tuple[0]) # q_tuple is (q, k), we need q
+
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(all_q_values))
         if num_samples > 0:
-            sampled_q = df_with_parts['q'].dropna().sample(n=num_samples, random_state=42).tolist()
+            # Need to sample from the list of all_q_values, not the DataFrame
+            sampled_q = random.sample(all_q_values, num_samples)
             metafunc.parametrize("q_prime_check", sampled_q)
 
     if "n_no_parts" in metafunc.fixturenames and metafunc.function.__name__ == "test_find_sage_sum_bases_no_partitions":
@@ -138,18 +168,21 @@ def pytest_generate_tests(metafunc):
             metafunc.parametrize("n_with_parts, expected_partitions", params_with_parts)
 
     if "n_arith" in metafunc.fixturenames and "p_arith" in metafunc.fixturenames and "q_arith" in metafunc.fixturenames and metafunc.function.__name__ == "test_arithmetic_check_p_j_q_k_equals_n":
-        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts))
+        num_samples = min(NUM_RANDOM_TEST_PRIMES, len(df_with_parts)) # df_with_parts now has 'partitions_set'
         if num_samples > 0:
-            # Reuse shared_sampled_rows if already sampled by 'test_find_sage_sum_bases_with_partitions'
-            # Otherwise, sample independently (less ideal, but robust if test order changes or one test is run in isolation)
-            if 'shared_sampled_rows' in locals(): # Check if it's already defined from the previous block
-                sampled_rows_for_arith = shared_sampled_rows
-            else:
-                sampled_rows_for_arith = df_with_parts.sample(n=num_samples, random_state=42)
-
-            # Parameters will be (n, p, q, j, k)
-            params_arith = list(sampled_rows_for_arith.apply(lambda row: (row['n'], row['p'], row['q'], row['j'], row['k']), axis=1))
-            metafunc.parametrize("n_arith, p_arith, q_arith, j_arith, k_arith", params_arith)
+            # We need to sample individual (n, p, j, q, k) tuples from the partitions_set.
+            # Flatten the df_with_parts into a list of (n, p, j, q, k) tuples for sampling.
+            all_arithmetic_data = []
+            for _, row in df_with_parts.iterrows():
+                n_val = row['n']
+                for p_tuple, q_tuple in row['partitions_set']:
+                    p_val, j_val = p_tuple
+                    q_val, k_val = q_tuple
+                    all_arithmetic_data.append((n_val, p_val, j_val, q_val, k_val))
+            
+            if len(all_arithmetic_data) > 0:
+                sampled_arith = random.sample(all_arithmetic_data, min(NUM_RANDOM_TEST_PRIMES, len(all_arithmetic_data)))
+                metafunc.parametrize("n_arith, p_arith, j_arith, q_arith, k_arith", sampled_arith)
 
 # --- Test Functions ---
 

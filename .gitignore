@@ -47,10 +47,11 @@ ENV/
 *.gif
 *.pdf 
 src/model/
-<<<<<<< HEAD
 .ideascontext
 test_results
 newest_test
 
 factorsums.egg-info/
 __pycache__
+logs/*
+!logs/.gitkeep
