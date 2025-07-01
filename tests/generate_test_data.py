@@ -5,63 +5,60 @@ import argparse
 import time
 import multiprocessing
 import pickle
-from sage.all import Integer, is_prime, Primes, primes, Partitions, Family
+from sage.all import Integer, is_prime, Primes, primes, Partitions, Family, prime_range
 from typing import Tuple, Optional, Set, List, Iterator, Dict
 from datetime import datetime
 import shutil
 import pandas as pd
 from tqdm import tqdm
 import psutil
+import numpy as np
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
+from queue import Queue
+from threading import Thread, Lock
+from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
+import functools
 
 # Global Definitions
 
 
 # COMPUTATIONAL FUNCTIONS
 def generate_data(
-    num_primes: int = 1000,
-    batch_size: Optional[int] = None,
-    num_processes: Optional[int] = None
+    num_primes: int,
+    batch_size: int,
+    num_processes: Optional[int] = None,
+    num_threads_per_process: int = 2,
 ) -> Family:
     """
-    Generates a Sage Family containing prime partitions for the first `num_primes` primes.
-    The Family maps each prime `n` to a set of its partition tuples (p, j, q, k).
-    
-    `batch_size`: Optional integer to specify the processing batch size.
-    `num_processes`: Optional integer to specify the number of worker processes.
-    
-    Returns:
-        sage.sets.family.Family: A Family mapping primes to their partition sets.
+    Generates test data for factor sums using a two-level parallel architecture.
+    Level 1: A multiprocessing pool to parallelize work over batches of primes.
+    Level 2: A producer-consumer thread model to check partitions for each prime.
     """
-    BATCH_SIZE = batch_size if batch_size is not None else 250
     
     print(f"Generating partitions for the first {num_primes} primes...")
-    P = Primes() # Note that P is an immutable Set object. Ignore the linter.
     
-    if num_primes == 0:
-        upper_limit_prime = 0
-    else:
-        upper_limit_prime = P.unrank(num_primes - 1)
         
-    primes_to_process = list(primes(upper_limit_prime + 1))
+    #currently little benefit to extra logical cores.
+    num_processes_actual = psutil.cpu_count(logical=False)
+    num_processes_actual = num_processes_actual - 1 if num_processes_actual > 1 else 1
 
-    if num_processes is None:
-        num_processes_actual = psutil.cpu_count(logical=False)
-        num_processes_actual = num_processes_actual - 1 if num_processes_actual - 1 > 0 else 1
-    else:
-        num_processes_actual = num_processes
-
-    print(f"Using {num_processes_actual} threads for generation with batch size {BATCH_SIZE}.")
-
-    total_batches = (len(primes_to_process) + BATCH_SIZE - 1) // BATCH_SIZE
+    print(f"Using {num_processes_actual} threads for generation with batch size {batch_size}.")
 
     master_data_dict = {}
 
+    batch_size = batch_size if batch_size is not None else 250
+    P = Primes() # Note that P is an immutable Set object. Ignore the linter.
+    max_prime = P.unrank(num_primes - 1)
+    prime_batch = prime_range(max_prime)
+    prime_batch = np.array(prime_batch)
+    total_batches = num_primes / BATCH_SIZE
+    prime_batch.shape = (total_batches, BATCH_SIZE)
+
     with multiprocessing.Pool(processes=num_processes_actual) as pool:
-        # Create batches on-the-fly with a generator expression
-        batches = (primes_to_process[i:i + BATCH_SIZE] for i in range(0, len(primes_to_process), BATCH_SIZE))
         # Wrap the imap_unordered with tqdm for a progress bar
         for batch_results in tqdm(pool.imap_unordered(
-            _find_sum_bases, batches
+            _find_sum_bases, prime_batch
         ), total=total_batches, desc="Generating prime partitions", unit="batch"):
             master_data_dict.update(batch_results)
 
@@ -72,46 +69,68 @@ def generate_data(
 
     return data_family
 
-def _find_sum_bases(primes_batch: List[int]) -> Dict[int, Set[Tuple['Integer', int, 'Integer', int]]]:
+def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
     """
-    Finds prime pairs (p, q) and exponents (j, k) such that p^j + q^k = n, where j, k >= 1.
-    Assumes `n` is a prime number.
-    Accepts a batch of primes and processes them.
-    Returns:
-        Dict[int, Set[Tuple[Integer, int, Integer, int]]]:
-            A dictionary mapping each prime `n` in the batch to a set of its canonical 
-            partition tuples (prime1, exp1, prime2, exp2).
+    Checks if a number is a prime power (p^j, j>=1).
+    Returns a tuple (p, j) if it is, otherwise None.
+    Uses proof=False for performance; verification is done later.
     """
-    results: Dict[int, Set[Tuple['Integer', int, 'Integer', int]]] = {}
-    for n in primes_batch:
-        found_tuples: Set[Tuple['Integer', int, 'Integer', int]] = set()
-
-        for sum_pair in Partitions(n, length=2): # Linter might not recognize 'length' parameter for Sage Partitions. # type: ignore
-            (p1, j1) = _get_prime_powers(sum_pair[0]) or (None, None)
-            (p2, j2) = _get_prime_powers(sum_pair[1]) or (None, None)
-
-            if p1 is None or p2 is None:
-                continue
-
-            if p1 <= p2:
-                canonical_flat_tuple = (p1, j1, p2, j2)
-            else:
-                canonical_flat_tuple = (p2, j2, p1, j1)
-            found_tuples.add(canonical_flat_tuple) # type: ignore [arg-type]
-
-        results[n] = found_tuples
-    return results
-
-def _get_prime_powers(val: Integer) -> Optional[Tuple[Integer, int]]:
     if val.is_prime(proof=False):
         return val, 1
     
     if val.is_perfect_power():
-
+        try:
         base, exponent = val.perfect_power()
         if base.is_prime(proof=False):
             return (base, exponent)
+        except ValueError:
+            # Not a perfect power
+            return None
     return None
+
+def _get_prime_powers(p_sum: Integer) -> Set[Tuple[Integer, Integer, Integer, Integer]]:
+    """
+    Finds pairs of prime powers (p^j, q^k) that sum to p_sum.
+    This is the core scalar function that will be vectorized.
+    """
+    found_tuples = set()
+    # Iterate through 2-partitions of p_sum
+    for sum_pair in Partitions(p_sum, length=2):
+        # Check if each part of the partition is a prime power
+        p1_info = prime_power(sum_pair[0])
+        p2_info = prime_power(sum_pair[1])
+
+        if p1_info and p2_info:
+            p1, j1 = p1_info
+            p2, j2 = p2_info
+            
+            # Ensure canonical ordering (p1 <= p2)
+            if p1 <= p2:
+                canonical_tuple = (p1, j1, p2, j2)
+            else:
+                canonical_tuple = (p2, j2, p1, j1)
+            found_tuples.add(canonical_tuple)
+            
+    return found_tuples
+
+def _find_sum_bases(batch_primes: np.ndarray) -> Dict[Integer, Set[Tuple[Integer, Integer, Integer, Integer]]]:
+    """
+    Worker function for multiprocessing.
+    Takes a batch of primes and finds their sum base representations.
+    This version uses np.vectorize for cleaner code.
+    """
+    # Create a vectorized version of _get_prime_powers.
+    vectorized_get_partitions = np.vectorize(_get_prime_powers, otypes=[object])
+
+    # Apply the vectorized function to the entire batch at once.
+    all_partition_sets = vectorized_get_partitions(p_sum=batch_primes)
+
+    # Build the results dictionary, filtering out primes that had no partitions.
+    batch_results = {prime: partitions for prime, partitions in zip(batch_primes, all_partition_sets) if partitions}
+
+    return batch_results
+
+
 
 # COMPUTATIONAL & FILE HANDLING (Public)
 def verify_data(filename: str, num_primes: int):
@@ -141,19 +160,19 @@ def verify_data(filename: str, num_primes: int):
         if not Integer(n).is_prime(proof=True):
             print(f"Warning: Key {n} in the Family is not prime.")
             all_ok = False
-        
+
         for p, j, q, k in partitions:
             if not p.is_prime(proof=True):
                 print(f"Warning: p={p} in partition for n={n} is not prime.")
                 all_ok = False
             if not q.is_prime(proof=True):
                 print(f"Warning: q={q} in partition for n={n} is not prime.")
-                all_ok = False
-            
+            all_ok = False
+
             if p**j + q**k != n:
                 print(f"Warning: For n={n}, the sum p^j + q^k ({p}^{j} + {q}^{k}) does not equal n.")
-                all_ok = False
-    
+            all_ok = False
+
     return all_ok
 
 # FILE HANDLING FUNCTIONS
@@ -211,12 +230,27 @@ def csv_to_pkl(csv_filepath: str, pkl_filepath: str):
         print(f"An error occurred during conversion: {e}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Generate and verify prime partition test data.')
-    parser.add_argument('--num-primes', type=int, default=5000, help='Number of primes to generate test data for.')
-    parser.add_argument('--csv', action='store_true', help='Also output data to CSV format.')
-    parser.add_argument('--batch-size', type=int, help='Optional batch size for multiprocessing.')
-    parser.add_argument('--num-processes', type=int, default=os.cpu_count(), help='Optional number of threads to use. Defaults to CPU count.')
+    parser = argparse.ArgumentParser(description="Generate and save a dictionary of prime partitions.")
+    parser.add_argument("--num_primes", type=int, default=1000, help="The number of primes to process.")
+    parser.add_argument("--batch_size", type=int, default=250, help="The batch size for processing.")
+    parser.add_argument("--num_processes", type=int, default=None, help="The number of processes to use.")
+    parser.add_argument("--output_dir", type=str, default="data", help="The directory to save the output files.")
+    parser.add_argument("--log_dir", type=str, default="logs", help="The directory to save the log files.")
     args = parser.parse_args()
+
+    # Input validation
+    if args.num_primes % 10 != 0:
+        parser.error("--num_primes must be a multiple of 10.")
+    
+    if args.batch_size % 10 != 0:
+        parser.error("--batch_size must be a multiple of 10.")
+
+    if args.num_primes % args.batch_size != 0:
+        parser.error("--num_primes must be divisible by --batch_size for array reshaping.")
+
+    # Create directories if they don't exist
+    os.makedirs(args.output_dir, exist_ok=True)
+    os.makedirs(args.log_dir, exist_ok=True)
 
     generated_data = generate_data(num_primes=args.num_primes, batch_size=args.batch_size, num_processes=args.num_processes)
 
@@ -232,8 +266,5 @@ if __name__ == "__main__":
     pkl_output_filename = os.path.join(data_dir, f"{args.num_primes}primes_{today_str}.pkl")
 
     _save_pkl(generated_data, pkl_output_filename, args.num_primes)
-
-    if args.csv:
-        print("CSV output is not supported for the Sage Family data structure.")
 
     verify_data(filename=pkl_output_filename, num_primes=args.num_primes)  

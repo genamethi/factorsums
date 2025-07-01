@@ -16,87 +16,53 @@
 
 *Pickle format (`.pkl`) is generally expected to preserve SageMath object types (e.g., `Integer`) directly upon loading. This has been tested on a limited basis.*
 
--The project is (circa 6/25/24) being made into a reusable python module.
+-The project is (circa 6/30/2025) being made into a reusable python module.
 --Current `tree -L 3` output:
 ```
 .
 ├── archive
 │   ├── basesearch_instructions.txt
 │   ├── conventions.md
+│   ├── data
 │   ├── instructions.txt
-│   ├── __pycache__
-│   │   └── test_find_sum_bases.cpython-312-pytest-8.4.1.pyc
 │   ├── README.md
 │   ├── src
-│   │   ├── find_sum_bases.py
-│   │   ├── number_partition.py
-│   │   └── prime_utils.py
 │   ├── tests
-│   │   ├── test_find_sum_bases.py
-│   │   ├── test_number_partition.py
-│   │   └── test_prime_utils.py
 │   └── viz
-│       └── plot_sum_bases.py
-├── env.yaml
-├── __pycache__
-│   └── generate_test_data.cpython-312.pyc
+├── aux
+│   └── df_inspect.py
+├── Context
+├── current627
+├── factorsums.code-workspace
+├── factorsums.yaml
+├── logs
+│   ├── generate_log_100000_20250629_055405.txt
+│   ├── generate_log_16000_20250629_042752.txt
+│   ... (other logs)
+├── new
 ├── pyproject.toml
 ├── pytest.ini
 ├── sample
 │   ├── frequency_of_zero_counts_by_range.csv
-│   ├── prime_partitions.csv
 │   ├── viz
-│   │   ├── frequency_of_zero_counts_bar_chart_by_range.png
-│   │   ├── n_interval_spread_bar_chart.png
-│   │   ├── n_interval_spread_histogram.png
-│   │   ├── n_partition_multiplicity_plot.png
-│   │   ├── prime_gaps_plot.png
-│   │   ├── prime_n_intervals_maximal_0_9999.png
-│   │   ├── prime_n_intervals_maximal_100000_109999.png
-│   │   ├── prime_n_intervals_maximal_10000_19999.png
-│   │   ├── prime_n_intervals_maximal_20000_29999.png
-│   │   ├── prime_n_intervals_maximal_30000_39999.png
-│   │   ├── prime_n_intervals_maximal_40000_49999.png
-│   │   ├── prime_n_intervals_maximal_50000_59999.png
-│   │   ├── prime_n_intervals_maximal_60000_69999.png
-│   │   ├── prime_n_intervals_maximal_70000_79999.png
-│   │   ├── prime_n_intervals_maximal_80000_89999.png
-│   │   ├── prime_n_intervals_maximal_90000_99999.png
-│   │   ├── prime_n_intervals_maximal_plot.png
-│   │   ├── prime_n_intervals_plot.png
-│   │   ├── prime_partitions_count_plot.png
-│   │   └── zero_partitions_frequency_bar_chart.png
-│   ├── zero_partitions_frequency_by_digits.csv
-│   └── zero_partitions_frequency.csv
+│   └── ... (various plots)
 ├── skeleton
 │   ├── number_partition_skeleton.py
 │   └── prime_utils_skeleton.py
 ├── src
 │   ├── factorsums
-│   │   ├── __init__.py
-│   │   ├── __pycache__
 │   │   ├── data
-│   │   │   └── prime_partitions.csv
+│   │   ├── __init__.py
 │   │   └── sage_factor_sums.py
-│   ├── factorsums.egg-info
-│   │   ├── dependency_links.txt
-│   │   ├── PKG-INFO
-│   │   ├── requires.txt
-│   │   ├── SOURCES.txt
-│   │   └── top_level.txt
+│   ├── primepartgen.py
+│   ├── sage_factor_sums.py
 │   └── viz
-│       ├── analyze_prime_n_intervals.py
-│       ├── __init__.py
-│       ├── plot_prime_n_intervals.py
-│       ├── plot_prime_squares.py
-│       └── __pycache__
+│       ├── ...
+│       └── testdataplot.py
 └── tests
     ├── generate_test_data.py
     ├── __pycache__
-    │   ├── test_find_sum_bases.cpython-312-pytest-8.4.1.pyc
-    │   ├── test_number_partition.cpython-312-pytest-8.4.1.pyc
-    │   ├── test_prime_utils.cpython-312-pytest-8.4.1.pyc
-    │   └── test_sage_factor_sums.cpython-312-pytest-8.4.1.pyc
+    ├── testgen.sh
     └── test_sage_factor_sums.py
 ```
 --Note the `env.yaml` and `pyproject.toml` files and their contents:
@@ -109,15 +75,47 @@
 --Another persistent linter error occurs when using `Primes().rank(Integer(x), proof=False)`, where the linter expects a `proof` argument for a `Python int`, even after explicit casting to `Sage Integer`. This can be safely ignored with `# type: ignore`.
 --Any new linter errors that occur with otherwise documented Sage functionality can be ignored, but a comment must be added.
 
--Currently, test data for `tests/test_sage_factor_sums.py` is created by `tests/generate_test_data.py`.
---This script now generates data for up to 5000 primes. Larger datasets will be generated on a more powerful desktop.
---When `generate_test_data.py` is run, it checks for an existing `prime_partitions.csv` in `src/factorsums/data/`.
----If found, it renames the existing file to `prime_partitions_ARCHIVED_YYYYMMDD_HHMMSS.csv` and moves it to a new `archive/data/` directory (which will be created if it doesn't exist).
---The newly generated file in `src/factorsums/data/` will be named dynamically as `{num_primes}primes_YYYYMMDD.csv` (e.g., `5000primes_20240726.csv`). This is intended to be a bundled resource for package distribution and to avoid initial generation time on other machines.
---*Recent change:* Data is now collected entirely in memory as a list of dictionaries, then converted to a Pandas DataFrame, and finally written to CSV using `df.to_csv()`. This reduces frequent disk I/O during generation.
---*Future Plan:* A `csv_to_pkl` function will be added to convert the generated CSV to a more efficient binary Pickle format for remote users and optimized loading, handling the parsing of nested `partitions_data` via `ast.literal_eval`.
+# Core Generation Scripts (As of June 30, 2025)
 
--Different development environments are being used, but most are the latest version of Cursor with a preference for `gemini-2.5-flash`. Debian 13 (trixie still in testing on 6/25/24) with optional sid packages is my main OS, but I also run on Windows 11 Preview (latest typically) and MacOS Cursor. NeoVim dev version is often used. `zsh` is my main shell, but `bash` is always present. Usually, I'll note the number of cores I'm using with the agent, but feel free to request a stat to check. 
+- **`src/primepartgen.py` (Primary Generator):**
+    - The project has pivoted to a new, high-performance architecture housed in this script.
+    - It uses a two-level parallel model:
+        1. A `multiprocessing.Pool` distributes large batches of primes to worker processes.
+        2. Each worker process then uses a multi-threaded producer-consumer model to find and verify partitions for each prime in its batch, leveraging `fast_vector_partitions` (`fvp`).
+    - This script is the focus of current development for core partition generation logic.
+
+- **`tests/generate_test_data.py` (Future Orchestrator/Verifier):**
+    - This script is being refactored. Its previous generation logic is now deprecated.
+    - **Future Role:** It will serve as a high-level driver. Its responsibilities will be to:
+        1.  Call the core generation logic from `src/primepartgen.py`.
+        2.  Run the rigorous `verify_data` function on the generated output.
+        3.  Handle file I/O, archiving, and other orchestration tasks.
+    - This separates the core algorithm from the data management and verification workflow.
+
+# Future Architecture and Refactoring (TODO)
+
+This section outlines potential future improvements for the `primepartgen.py` implementation.
+
+- [ ] **Refactor into a `PartitionGenerator` Class:**
+    - Encapsulate the entire generation process within a class.
+    - Configuration parameters (`num_primes`, `batch_size`, etc.) would become instance attributes.
+    - The various worker and helper functions would become private methods, cleaning up the global namespace and improving state management.
+
+- [ ] **Modularize the Codebase:**
+    - Break the single `primepartgen.py` file into a dedicated submodule (e.g., `src/primepartgen/`).
+    - **`workers.py`**: Would contain the process and thread worker functions (`_process_batch_worker`, `_find_partitions_for_prime_threaded`, `_partition_checker_worker`).
+    - **`utils.py`**: Would contain the core mathematical helpers (`prime_power`, `_are_vectors_of_prime_powers`).
+    - **`io.py`**: Would contain file handling logic (`save_data`, `verify_data`). This would be separate from the core generation logic.
+
+- [ ] **Add Rigorous Proof Parameter:**
+    - Add a `--proof` command-line argument.
+    - If `True`, all calls to `is_prime` within the generation process will use `proof=True`. This will be significantly slower but will produce verified data directly, useful for smaller, high-confidence datasets.
+
+- [ ] **Ultimate Performance Goal (Cython):**
+    - The primary bottleneck is the Python-level looping inside `_are_vectors_of_prime_powers`.
+    - **Plan:** Replace this function with a custom NumPy `ufunc` written in Cython.
+    - This `ufunc` would operate on NumPy arrays directly, calling Sage's underlying C primality functions.
+    - **Benefit:** This would yield a massive performance increase, likely making the secondary threading pool redundant and simplifying the overall architecture back to a single `multiprocessing.Pool` calling a highly optimized Cython function.
 
 # -Breaking changes 
 
@@ -148,3 +146,12 @@ This section outlines potential future improvements for test data storage and co
     - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 
 
 - [ ] **Investigate `prime_range` vs `primes`:** Research the performance and memory implications of using `prime_range` to generate the initial list of primes, as it may be more direct and semantically clear than `list(primes(...))`. 
+
+# New Core Generation Script: primepartgen.py (July 2024)
+
+- The project has pivoted from the `np.vectorize` approach in `tests/generate_test_data.py` to a more advanced architecture.
+- A new script, `tests/primepartgen.py`, has been created to house this new implementation. This is now considered the primary generation script.
+- This new script uses a two-level parallel model:
+    1. A `multiprocessing.Pool` distributes large batches of primes to worker processes.
+    2. Each worker process then uses a multi-threaded producer-consumer model to find and verify partitions for each prime in its batch, leveraging `fast_vector_partitions` (`fvp`).
+- This design aims to provide better performance and resilience against "hard" primes that have many partitions to check. `tests/generate_test_data.py` is now considered deprecated in favor of this new approach. 
