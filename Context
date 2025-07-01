@@ -78,11 +78,12 @@
 # Core Generation Scripts (As of June 30, 2025)
 
 - **`src/primepartgen.py` (Primary Generator):**
-    - The project has pivoted to a new, high-performance architecture housed in this script.
-    - It uses a two-level parallel model:
-        1. A `multiprocessing.Pool` distributes large batches of primes to worker processes.
-        2. Each worker process then uses a multi-threaded producer-consumer model to find and verify partitions for each prime in its batch, leveraging `fast_vector_partitions` (`fvp`).
-    - This script is the focus of current development for core partition generation logic.
+    - The script now implements a highly efficient, two-level parallel architecture.
+    - **Level 1 (Process Pool):** A `multiprocessing.Pool` distributes chunks of prime *vectors* to worker processes. This minimizes inter-process communication by giving each worker a large, independent set of calculations.
+    - **Level 2 (Threaded Producer-Consumer):** Inside each worker, a producer-consumer model is used.
+        - The **Producer** (main thread) iterates through its prime vectors, calling `fast_vector_partitions` (`fvp`) on each entire vector. It then disassembles the resulting vector partitions into `(prime_vector, partition)` tasks for a shared queue.
+        - The **Consumers** (thread pool) pull these tasks and perform vectorized primality checks using a `numpy.vectorize` wrapper around the core `prime_power` function. This design keeps the data vectorized for as long as possible.
+    - The final output is a dictionary mapping each prime to a NumPy array of its valid partitions.
 
 - **`tests/generate_test_data.py` (Future Orchestrator/Verifier):**
     - This script is being refactored. Its previous generation logic is now deprecated.
@@ -103,8 +104,8 @@ This section outlines potential future improvements for the `primepartgen.py` im
 
 - [ ] **Modularize the Codebase:**
     - Break the single `primepartgen.py` file into a dedicated submodule (e.g., `src/primepartgen/`).
-    - **`workers.py`**: Would contain the process and thread worker functions (`_process_batch_worker`, `_find_partitions_for_prime_threaded`, `_partition_checker_worker`).
-    - **`utils.py`**: Would contain the core mathematical helpers (`prime_power`, `_are_vectors_of_prime_powers`).
+    - **`workers.py`**: Would contain the process and thread worker functions (`_process_batch_worker`, `_partition_checker_worker`).
+    - **`utils.py`**: Would contain the core mathematical helpers (`prime_power`, `vectorized_prime_power`, `_are_vectors_of_prime_powers`).
     - **`io.py`**: Would contain file handling logic (`save_data`, `verify_data`). This would be separate from the core generation logic.
 
 - [ ] **Add Rigorous Proof Parameter:**
@@ -112,8 +113,8 @@ This section outlines potential future improvements for the `primepartgen.py` im
     - If `True`, all calls to `is_prime` within the generation process will use `proof=True`. This will be significantly slower but will produce verified data directly, useful for smaller, high-confidence datasets.
 
 - [ ] **Ultimate Performance Goal (Cython):**
-    - The primary bottleneck is the Python-level looping inside `_are_vectors_of_prime_powers`.
-    - **Plan:** Replace this function with a custom NumPy `ufunc` written in Cython.
+    - The primary bottleneck is the `np.vectorize` wrapper, which provides convenience but has high overhead. The minimal Python looping inside the consumer thread is not the main issue.
+    - **Plan:** Replace the `np.vectorize` call with a custom NumPy `ufunc` written in Cython.
     - This `ufunc` would operate on NumPy arrays directly, calling Sage's underlying C primality functions.
     - **Benefit:** This would yield a massive performance increase, likely making the secondary threading pool redundant and simplifying the overall architecture back to a single `multiprocessing.Pool` calling a highly optimized Cython function.
 
@@ -146,12 +147,3 @@ This section outlines potential future improvements for test data storage and co
     - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 
 
 - [ ] **Investigate `prime_range` vs `primes`:** Research the performance and memory implications of using `prime_range` to generate the initial list of primes, as it may be more direct and semantically clear than `list(primes(...))`. 
-
-# New Core Generation Script: primepartgen.py (July 2024)
-
-- The project has pivoted from the `np.vectorize` approach in `tests/generate_test_data.py` to a more advanced architecture.
-- A new script, `tests/primepartgen.py`, has been created to house this new implementation. This is now considered the primary generation script.
-- This new script uses a two-level parallel model:
-    1. A `multiprocessing.Pool` distributes large batches of primes to worker processes.
-    2. Each worker process then uses a multi-threaded producer-consumer model to find and verify partitions for each prime in its batch, leveraging `fast_vector_partitions` (`fvp`).
-- This design aims to provide better performance and resilience against "hard" primes that have many partitions to check. `tests/generate_test_data.py` is now considered deprecated in favor of this new approach. 

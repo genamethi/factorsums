@@ -1,6 +1,6 @@
 import argparse
 import functools
-import os
+import pickle
 import time
 from datetime import datetime
 from multiprocessing import Pool, cpu_count
@@ -11,10 +11,8 @@ from typing import Dict, List, Optional, Set, Tuple
 
 import numpy as np
 import psutil
-from sage.all import (Integer, Partitions, Primes, pari,
-                      is_perfect_power, is_prime)
+from sage.all import (Integer, Primes, is_prime)
 from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
-from sage.sets.family import Family
 from tqdm import tqdm
 
 # ==============================================================================
@@ -23,25 +21,22 @@ from tqdm import tqdm
 # The data generation uses a two-level parallel processing model:
 #
 # 1.  **Process-Level Parallelism (Coarse-Grained):**
-#     - The main `generate_data` function takes the full list of primes and splits
-#       it into large, equally-sized batches (e.g., 250 primes per batch).
-#     - A `multiprocessing.Pool` is created, with each worker process being assigned
-#       one entire batch of primes. This is efficient as it minimizes the overhead
-#       of inter-process communication by giving each worker a substantial task.
-#     - The target for this pool is `_process_batch_worker`.
+#     - The main `generate_data` function prepares a 2D NumPy array where each
+#       row is a vector of primes.
+#     - A `multiprocessing.Pool` distributes chunks of these prime vectors to
+#       worker processes. Using a `chunksize > 1` is key to reducing
+#       inter-process communication overhead.
 #
-# 2.  **Thread-Level Parallelism (Fine-Grained):**
-#     - Inside `_process_batch_worker`, the process iterates through each prime
-#       in its assigned batch.
-#     - For each prime, it calls `_find_partitions_for_prime_threaded`. This function
-#       implements a producer-consumer model using threads.
-#     - **Producer (Main Thread):** Generates partitions for a single prime using `fvp`
-#       and puts them onto a shared queue.
-#     - **Consumers (Worker Threads):** A small pool of threads pulls partitions from
-#       the queue and performs the CPU-intensive primality checks on them.
-#     - This model prevents a single "hard" prime (one with many partitions to check)
-#       from blocking an entire CPU core. The I/O-bound partition generation can
-#       continuously feed work to the CPU-bound checker threads.
+# 2.  **Thread-Level Parallelism (Fine-Grained Producer-Consumer):**
+#     - This occurs inside each worker process (`_process_batch_worker`).
+#     - **Producer (Main Thread):** Iterates through its assigned prime vectors.
+#       For each vector, it calls `fast_vector_partitions` (`fvp`) to get a
+#       generator for the partitions of the *entire vector*. It then puts tasks,
+#       in the form of `(original_prime_vector, partition_vector)`, onto a shared queue.
+#     - **Consumers (Worker Threads):** Pull tasks from the queue. They use a
+#       vectorized helper function (`_are_vectors_of_prime_powers`) to efficiently
+#       check which pairs in the partition are composed of two prime powers.
+#       Valid results are collected in a local dictionary to minimize lock contention.
 #
 # ==============================================================================
 
@@ -53,9 +48,14 @@ def generate_data(
     batch_size: int,
     num_processes: Optional[int] = None,
     num_threads_per_process: int = 2,
-) -> Family:
+) -> Dict:
     """
-    Generates a Sage Family for factor sums using the two-level parallel architecture.
+    Generates a dictionary of factor sums using the two-level parallel architecture.
+
+    Returns:
+        Dict[Integer, np.ndarray]: A dictionary mapping each prime `n` to a
+        NumPy array of its valid partitions. Each row in the array is a
+        partition of the form `[p, j, q, k]`.
     """
     if num_processes is None:
         # Use physical cores, minus one for system stability.
@@ -78,72 +78,50 @@ def generate_data(
     #do not edit this code. Add comments if you need to explain what's
     #needed to change it.
 
-    master_data_dict = {}
-
     with Pool(processes=num_processes) as pool:
-        # Pass the number of threads as a fixed argument to the worker
-        worker_func = functools.partial(
-            _process_batch_worker, num_threads=num_threads_per_process
-        )
+        # Determine a good chunk size. This sends multiple batches to a worker at once,
+        # reducing inter-process communication overhead.
+        num_batches = len(prime_batch)
+        chunk_size = max(1, num_batches // (num_processes * 4)) # Heuristic for work distribution
+
+        worker_func = functools.partial(_process_batch_worker, num_threads=num_threads_per_process)
+
         pbar = tqdm(
-            pool.imap_unordered(worker_func, prime_batches),
-            total=total_batches,
+            pool.imap_unordered(worker_func, prime_batch, chunksize=chunk_size),
+            total=num_batches,
             desc="Processing Batches",
         )
-        for batch_results in pbar:
-            master_data_dict.update(batch_results)
+        # The pool returns a list of lists of dictionaries.
+        list_of_dicts = []
+        for worker_results in pbar:
+            list_of_dicts.extend(worker_results)
 
-    print(f"Finished generating all data for {num_primes} primes. Creating Sage Family...")
-    data_family = Family(master_data_dict)
-    return data_family
+    print("Finished generating data. Merging results...")
+    master_data_dict = {}
+    for result_dict in list_of_dicts:
+        for p, partitions in result_dict.items():
+            master_data_dict.setdefault(p, set()).update(partitions)
+
+    # Final step: convert the sets of tuples into a NumPy array for each prime.
+    # The dtype=object is needed to correctly handle the Sage Integer types.
+    final_data = {
+        p: np.array(list(partitions), dtype=object)
+        for p, partitions in master_data_dict.items()
+    }
+
+    return final_data
 
 
 # --- LEVEL 2: Process Pool Worker ---
 
 def _process_batch_worker(
-    batch_of_primes: np.ndarray, num_threads: int
-) -> Dict[Integer, Set[Tuple[Integer, int, Integer, int]]]:
-    """
-    Worker function for the main multiprocessing Pool.
-    It iterates through a batch of primes and uses the threaded model for each one.
-    """
-    batch_results = {}
-    for p_sum in batch_of_primes:
-        p_sum_int = Integer(p_sum)
-        found_partitions = _find_partitions_for_prime_threaded(p_sum_int, num_threads)
-        if found_partitions:
-            # Format the raw vector partitions into the final (p,j,q,k) structure
-            formatted_results = set()
-            for part in found_partitions:
-                s_vec, t_vec = part
-                # The worker already verified these are prime powers.
-                # Here we just sum the vector elements to get the original number.
-                s_val = Integer(sum(s_vec))
-                t_val = Integer(sum(t_vec))
-                s_pp = prime_power(s_val)
-                t_pp = prime_power(t_val)
-
-                if s_pp and t_pp:
-                    # Ensure canonical ordering by sorting
-                    res_tuple = tuple(sorted((s_pp, t_pp)))
-                    formatted_results.add(res_tuple)
-            
-            if formatted_results:
-                 batch_results[p_sum_int] = formatted_results
-                 
-    return batch_results
-
-
-# --- LEVEL 3: Threaded Producer-Consumer for a Single Prime ---
-
-def _find_partitions_for_prime_threaded(
-    p_sum: Integer, num_threads: int
+    prime_chunk: np.ndarray, num_threads: int
 ) -> list:
     """
-    Producer-consumer function to find valid partitions for a single prime.
-    The main thread produces partitions, worker threads consume and check them.
+    Worker for the multiprocessing Pool. Receives a chunk of prime vectors,
+    calls fvp on each, and uses threads to check the resulting partitions.
     """
-    partitions_queue = Queue(maxsize=num_threads * 5)
+    partitions_queue = Queue(maxsize=num_threads * 10)
     valid_results = []
     lock = Lock()
 
@@ -153,24 +131,26 @@ def _find_partitions_for_prime_threaded(
             target=_partition_checker_worker,
             args=(partitions_queue, valid_results, lock),
         )
+        t.daemon = True
         t.start()
         threads.append(t)
 
     try:
-        # The vector partitioning logic starts here
-        n_vector = _prime_to_vector(p_sum)
-        # We are only interested in parts >= 2, as 1 is not a prime power.
-        min_parts = np.ones(len(n_vector), dtype=int) * 2
-        part_gen = fvp(n_vector, m=min_parts)
+        # This loop is essential to process every prime vector in the chunk.
+        for prime_vector in prime_chunk:
+            # This line is correct as per your instruction.
+            twos = np.ones(len(prime_vector), dtype=int) * 2
+            part_gen = fvp(prime_vector, twos)
 
-        for part in part_gen:
-            # We only care about n = s + t partitions.
-            if len(part) > 2:
-                break
-            if len(part) == 2:
-                partitions_queue.put(part)
+            for part in part_gen:
+                if len(part) > 2:
+                    break
+                if len(part) == 2:
+                    # The task for the queue MUST include the original prime_vector
+                    # so the checker can link results back to the correct prime.
+                    task = (prime_vector, part)
+                    partitions_queue.put(task)
     finally:
-        # Signal workers to exit and wait for completion
         for _ in range(num_threads):
             partitions_queue.put(None)
         for t in threads:
@@ -179,37 +159,73 @@ def _find_partitions_for_prime_threaded(
     return valid_results
 
 
-def _partition_checker_worker(q_in: Queue, valid_results_list: list, list_lock: Lock):
-    """Consumer thread: pulls partitions from a queue and checks them."""
+def _partition_checker_worker(q_in: Queue, results_list: list, list_lock: Lock):
+    """
+    Consumer thread: pulls a (prime_vector, part) task, performs a
+    vectorized check, and formats the valid results into a dictionary.
+    """
+    local_results = {}
     while True:
-        part = q_in.get()
-        if part is None:  # Sentinel value indicates no more work
+        task = q_in.get()
+        if task is None:
+            # When the thread is told to exit, add its locally-built dictionary
+            # to the shared results list. This is done once per thread.
+            with list_lock:
+                results_list.append(local_results)
             break
 
-        if _are_vectors_of_prime_powers(part):
-            with list_lock:
-                valid_results_list.append(part)
+        prime_vector, part = task
+        s_vector, t_vector = part
+
+        valid_mask = _are_vectors_of_prime_powers(part)
+
+        if np.any(valid_mask):
+            # Use the mask to get tiny arrays of only the valid components.
+            valid_primes = prime_vector[valid_mask]
+            valid_s_part = s_vector[valid_mask]
+            valid_t_part = t_vector[valid_mask]
+
+            # Get the prime power info (p, j) for the valid parts.
+            s_info_vec = vectorized_prime_power(valid_s_part)
+            t_info_vec = vectorized_prime_power(valid_t_part)
+
+            # Now, perform a minimal loop ONLY over the confirmed valid results.
+            for i in range(len(valid_primes)):
+                n = valid_primes[i]
+                s_info = s_info_vec[i]
+                t_info = t_info_vec[i]
+
+                p1, j1 = s_info
+                p2, j2 = t_info
+                # Enforce p1 <= p2 for canonical representation, but as a flat tuple.
+                if p1 <= p2:
+                    canonical_tuple = (p1, j1, p2, j2)
+                else:
+                    canonical_tuple = (p2, j2, p1, j1)
+
+                local_results.setdefault(n, Set()).add(canonical_tuple)
+
         q_in.task_done()
 
 
 # --- HELPER FUNCTIONS ---
 
-def _prime_to_vector(p: Integer) -> np.ndarray:
-    """Converts a prime number to its vector representation for partitioning."""
-    # The partition of [p, 0] will be vectors [s, t] where s+t = [p,0].
-    return np.array([p, 0])
+vectorized_prime_power = np.vectorize(
+    lambda x: prime_power(x), otypes=[object]
+)
 
+def _are_vectors_of_prime_powers(part: tuple) -> np.ndarray:
+    """
+    Checks a vector partition element-wise.
+    Returns a boolean numpy array ("mask") that is True for each index i
+    where both s_vector[i] and t_vector[i] are prime powers.
+    """
+    s_vector, t_vector = part
+    s_are_pp = vectorized_prime_power(s_vector)
+    t_are_pp = vectorized_prime_power(t_vector)
 
-def _are_vectors_of_prime_powers(part: tuple) -> bool:
-    """Checks if all non-zero elements in a list of vectors are prime powers."""
-    # `part` is a tuple of numpy arrays, e.g., (array([s1, s2]), array([t1, t2])).
-    for vec in part:
-        for x in vec:
-            if x == 0:
-                continue
-            if prime_power(Integer(x)) is None:
-                return False
-    return True
+    valid_mask = (s_are_pp != None) & (t_are_pp != None)
+    return valid_mask
 
 
 def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
@@ -217,26 +233,24 @@ def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
     Checks if a number is a prime power (p^k, where p is prime and k >= 1).
     Returns a tuple (p, k) if it is, otherwise None.
     """
-    if val < 2:
-        return None
-    try:
+    if val.is_prime(proof=False):
+        return (val, 1)
+
+    #We will remove this optimization in the cython version
+    if val.is_perfect_power():
         base, exponent = val.perfect_power()
         if base.is_prime(proof=False):
             return (base, exponent)
         else:
             return None
-    except ValueError:
-        if val.is_prime(proof=False):
-            return (val, 1)
-        else:
-            return None
+
 
 
 # --- FILE I/O AND VERIFICATION ---
 # Note: These functions are kept from the original file structure.
 
-def save_data(data: Family, num_primes: int) -> str:
-    """Saves the Sage Family to a datestamped .pkl file, archiving any old file."""
+def save_data(data: Dict, num_primes: int) -> str:
+    """Saves the data dictionary to a datestamped .pkl file, archiving any old file."""
     output_dir = Path("src/factorsums/data")
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
@@ -255,7 +269,8 @@ def save_data(data: Family, num_primes: int) -> str:
 
     output_file_path = output_dir / f"{num_primes}primes_{datetime.now().strftime('%Y%m%d')}.pkl"
     print(f"Saving new data to {output_file_path}...")
-    data.save(str(output_file_path))
+    with open(output_file_path, "wb") as f:
+        pickle.dump(data, f)
     print("Save complete.")
     return str(output_file_path)
 
@@ -264,17 +279,35 @@ def verify_data(filename: str, num_primes: int):
     """Verifies the integrity of the generated data file."""
     print(f"\nVerifying data in {filename}...")
     try:
-        loaded_family = Family.load(filename)
+        with open(filename, "rb") as f:
+            loaded_data = pickle.load(f)
         print("File loaded successfully.")
         all_ok = True
 
-        unique_n_count = len(loaded_family.keys())
-        if unique_n_count != num_primes:
-            print(f"Warning: Number of unique primes with partitions ({unique_n_count}) does not match expected total primes ({num_primes}).")
-            # This is not a failure, just a note.
+        unique_n_count = len(loaded_data.keys())
+        if unique_n_count > num_primes: # It can be less, but not more.
+            print(f"Warning: Number of unique primes with partitions ({unique_n_count}) exceeds total primes processed ({num_primes}).")
+            all_ok = False
 
-        # Add more verification steps as needed
-        print("Data verification complete.")
+        # Verification loop for the new data structure
+        for n, partitions_array in loaded_data.items():
+            if not Integer(n).is_prime(proof=True):
+                print(f"Warning: Key {n} is not prime.")
+                all_ok = False
+            
+            for p, j, q, k in partitions_array:
+                if not Integer(p).is_prime(proof=True):
+                    print(f"Warning: p={p} in partition for n={n} is not prime.")
+                    all_ok = False
+                if not Integer(q).is_prime(proof=True):
+                    print(f"Warning: q={q} in partition for n={n} is not prime.")
+                    all_ok = False
+                
+                if Integer(p)**j + Integer(q)**k != n:
+                    print(f"Warning: For n={n}, the sum {p}^{j} + {q}^{k} does not equal n.")
+                    all_ok = False
+
+        print(f"Data verification {'succeeded' if all_ok else 'failed'}.")
 
     except Exception as e:
         print(f"An error occurred during verification: {e}")
