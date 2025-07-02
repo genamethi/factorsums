@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 import numpy as np
 import psutil
-from sage.all import (Integer, Primes, is_prime)
+from sage.all import (Integer, Primes, is_prime, prime_range)
 from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
 from tqdm import tqdm
 
