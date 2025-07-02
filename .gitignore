@@ -55,3 +55,5 @@ factorsums.egg-info/
 __pycache__
 logs/*
 !logs/.gitkeep
+# pixi environments
+.pixi

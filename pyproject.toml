@@ -1,16 +1,45 @@
+[build-system]
+requires = ["hatchling", "hatch-cython"]
+build-backend = "hatchling.build"
+
+[project]
 name = "factorsums"
 version = "0.3.0"
 description = "A project for factor sums calculations using SageMath"
 readme = "README.md"
 requires-python = "~=3.12"
-dependencies = [] # No direct pip dependencies, all handled by micromamba
+# PyPI dependencies would go here, but we are managing all with conda via pixi.
+dependencies = []
 
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+[tool.hatch.build.targets.wheel.hooks.cython]
+dependencies = ["cython>=3.0.0", "numpy"]
 
-[tool.setuptools.packages.find]
-where = ["src"] # tells setuptools to look for packages in the 'src' directory
+# This section tells hatch to compile all .py and .pyx files it finds.
+# We will later configure this to be more specific.
+compile-py = true
 
-[tool.setuptools.package-data]
-"factorsums" = ["data/*primes_*.csv"] # Dynamically named prime partition data files 
+# --- Pixi Configuration ---
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.dependencies]
+python = "~=3.12"
+sage = ">=10.6"
+cython = "*"
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+psutil = "*"
+tqdm = "*"
+
+[tool.pixi.pypi-dependencies]
+factorsums = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+# Example task to run the main script
+generate = "python src/primepartgen.py --num-primes 1000 --batch-size 250"
+
+[tool.hatch.build.sources]
+"src/factorsums" = "src/factorsums" 
