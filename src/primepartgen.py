@@ -46,8 +46,8 @@ from tqdm import tqdm
 def generate_data(
     num_primes: int,
     batch_size: int,
-    num_processes: Optional[int] = None,
-    num_threads_per_process: int = 2,
+    num_groups: int,
+    group_size: int,
 ) -> Dict:
     """
     Generates a dictionary of factor sums using the two-level parallel architecture.
@@ -57,14 +57,10 @@ def generate_data(
         NumPy array of its valid partitions. Each row in the array is a
         partition of the form `[p, j, q, k]`.
     """
-    if num_processes is None:
-        # Use physical cores, minus one for system stability.
-        num_processes = psutil.cpu_count(logical=False) - 1 or 1
-
     print(f"Generating partitions for the first {num_primes} primes...")
     print(
-        f"Using {num_processes} processes with batch size {batch_size}, "
-        f"and {num_threads_per_process} threads per worker process."
+        f"Using {num_groups} process groups with batch size {batch_size}, "
+        f"and {group_size} threads per group."
     )
 
     # Prepare batches of primes for the multiprocessing pool
@@ -73,22 +69,21 @@ def generate_data(
     max_prime = P.unrank(num_primes - 1)
     prime_batch = prime_range(max_prime)
     prime_batch = np.array(prime_batch)
-    total_batches = num_primes / batch_size
+    total_batches = num_primes // batch_size
     prime_batch.shape = (total_batches, batch_size)
     #do not edit this code. Add comments if you need to explain what's
     #needed to change it.
 
-    with Pool(processes=num_processes) as pool:
+    with Pool(processes=num_groups) as pool:
         # Determine a good chunk size. This sends multiple batches to a worker at once,
         # reducing inter-process communication overhead.
-        num_batches = len(prime_batch)
-        chunk_size = max(1, num_batches // (num_processes * 4)) # Heuristic for work distribution
+        chunk_size = max(1, total_batches // (num_groups * 4)) # Heuristic for work distribution
 
-        worker_func = functools.partial(_process_batch_worker, num_threads=num_threads_per_process)
+        worker_func = functools.partial(_process_batch_worker, num_threads=group_size)
 
         pbar = tqdm(
             pool.imap_unordered(worker_func, prime_batch, chunksize=chunk_size),
-            total=num_batches,
+            total=total_batches,
             desc="Processing Batches",
         )
         # The pool returns a list of lists of dictionaries.
@@ -332,16 +327,22 @@ def main():
         help="Number of primes to process in each batch.",
     )
     parser.add_argument(
-        "--num-processes",
+        "--num-groups",
         type=int,
         default=None,
-        help="Number of parallel processes to use (defaults to physical core count - 1).",
+        help="Number of parallel process groups. Defaults to the number of physical CPU cores."
     )
     parser.add_argument(
-        "--num-threads",
+        "--group-size",
         type=int,
         default=2,
-        help="Number of threads for each process to use for checking partitions.",
+        help="Number of consumer threads per group. Defaults to 2."
+    )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=None,
+        help="Total parallel worker threads. Overrides --num-groups."
     )
     args = parser.parse_args()
 
@@ -349,9 +350,26 @@ def main():
     if args.num_primes % args.batch_size != 0:
         parser.error("--num_primes must be divisible by --batch_size for array reshaping.")
 
+    # --- Logic to resolve the final parallelism configuration ---
+    num_groups = args.num_groups
+    group_size = args.group_size
+
+    if args.max_workers:
+        if args.max_workers % group_size != 0:
+            parser.error("--max-workers must be divisible by --group-size.")
+        num_groups = args.max_workers // group_size
+    elif not num_groups:
+        # Default to the number of physical cores if no group configuration is specified.
+        num_groups = psutil.cpu_count(logical=False) or 1
+
+    print(
+        f"Starting generation with {num_groups} process groups and "
+        f"{group_size} threads per group..."
+    )
+
     start_time = time.time()
     generated_data = generate_data(
-        args.num_primes, args.batch_size, args.num_processes, args.num_threads
+        args.num_primes, args.batch_size, num_groups=num_groups, group_size=group_size
     )
     end_time = time.time()
 
