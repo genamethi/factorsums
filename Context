@@ -147,3 +147,27 @@ This section outlines potential future improvements for test data storage and co
     - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 
 
 - [ ] **Investigate `prime_range` vs `primes`:** Research the performance and memory implications of using `prime_range` to generate the initial list of primes, as it may be more direct and semantically clear than `list(primes(...))`. 
+
+
+# Cython Implementation Plan (As of July 2, 2025)
+
+This section outlines the plan to optimize the core partition checking logic by replacing the Python-level `np.vectorize` call with a compiled Cython module.
+
+- **Goal:** Eliminate the performance bottleneck caused by iterating over NumPy object arrays of Sage `Integer` types and calling their methods from Python.
+
+- **Strategy:** Create a Cython module that `cimport`s types and functions directly from Sage's own installed `.pyx` and `.pxd` files. This allows for C-level operations on Sage objects, avoiding Python interpreter overhead.
+
+- **Local Sage Source Path:** The necessary Sage source files (`.pyx`, `.pxd`) are located within the pixi environment at: `/.pixi/envs/default/lib/python3.12/site-packages/sage/`
+
+- **Key Sage Source Files for Reference:**
+    - **Integer Type:** `sage/rings/integer.pyx` (https://github.com/sagemath/sage/blob/master/src/sage/rings/integer.pyx)
+    - **Power/Primality Functions:** `sage/arith/power.pyx` (https://github.com/sagemath/sage/blob/master/src/sage/arith/power.pyx)
+    - **Vector Partitions:** `sage/combinat/fast_vector_partitions.pyx` (https://github.com/sagemath/sage/blob/develop/src/sage/combinat/fast_vector_partitions.pyx)
+    - **Misc Helpers:** `sage/arith/misc.py` (https://github.com/sagemath/sage/blob/master/src/sage/arith/misc.py)
+
+- **Implementation Approach:**
+    1.  Create `src/factorsums/prime_power_check.pyx`.
+    2.  The module will expose a Python-visible function (`cython_vectorized_partition_check`) that accepts two NumPy arrays (`s_vector`, `t_vector`).
+    3.  Internally, the function will loop over the arrays, cast the elements to C-level `Integer` types, and use `cdef` functions from `sage.arith.power` to perform primality and power checks.
+    4.  It will return three NumPy arrays: a boolean `valid_mask`, and two object arrays containing the `(base, exp)` results for each input vector. The final filtering will be done in Python using this mask.
+    5.  The `pyproject.toml` will be updated to define this file as a setuptools extension module, ensuring it is compiled during installation. 

@@ -15,6 +15,8 @@ from sage.all import (Integer, Primes, is_prime, prime_range)
 from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
 from tqdm import tqdm
 
+from factorsums.prime_power_check import cython_vectorized_partition_check
+
 
 class PPPGenerator:
     """
@@ -158,35 +160,27 @@ class PPPGenerator:
     def _vectorized_partition_check(part: tuple) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Performs a vectorized check on partition vectors (s, t) to find pairs where
-        both s and t are prime powers.
-
-        This is a key optimization. It returns not only the boolean mask of valid pairs
-        but also the results of the `prime_power` calculation (`(base, exp)`) for
-        both vectors. This avoids re-computing these values in the consumer.
-
-        Returns:
-            A tuple containing:
-            - A boolean numpy array (mask) where True indicates a valid pair.
-            - A numpy array with the `(base, exp)` results for the first vector.
-            - A numpy array with the `(base, exp)` results for the second vector.
+        both s and t are prime powers using the compiled Cython module.
         """
         s_vector, t_vector = part
-        s_are_pp = vectorized_prime_power(s_vector)
-        t_are_pp = vectorized_prime_power(t_vector)
-        valid_mask = (s_are_pp != None) & (t_are_pp != None)
-        return valid_mask, s_are_pp, t_are_pp
+        # s_are_pp = vectorized_prime_power(s_vector)
+        # t_are_pp = vectorized_prime_power(t_vector)
+        # valid_mask = (s_are_pp != None) & (t_are_pp != None)
+        # return valid_mask, s_are_pp, t_are_pp
+        valid_mask, s_results, t_results = cython_vectorized_partition_check(s_vector, t_vector)
+        return valid_mask, s_results, t_results
 
-    @staticmethod
-    def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
-        if val.is_prime(proof=False):
-            return (val, 1)
-        if val.is_perfect_power():
-            base, exponent = val.perfect_power()
-            if base.is_prime(proof=False):
-                return (base, exponent)
-        return None
+    # @staticmethod
+    # def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
+    #     if val.is_prime(proof=False):
+    #         return (val, 1)
+    #     if val.is_perfect_power():
+    #         base, exponent = val.perfect_power()
+    #         if base.is_prime(proof=False):
+    #             return (base, exponent)
+    #     return None
 
-vectorized_prime_power = np.vectorize(PPPGenerator.prime_power, otypes=[object])
+# vectorized_prime_power = np.vectorize(PPPGenerator.prime_power, otypes=[object])
 
 # --- FILE I/O AND VERIFICATION (Standalone Functions) ---
 

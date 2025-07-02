@@ -55,7 +55,7 @@ def main():
         description='Find prime factor sums of n = p^j + q^k',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('n', type=int, help='Target number to partition')
+    parser.add_argument('n', type=Integer, help='Target number to partition')
     args = parser.parse_args()
 
     try:

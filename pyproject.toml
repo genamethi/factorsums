@@ -1,45 +1,43 @@
 [build-system]
-requires = ["hatchling", "hatch-cython"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0", "cython", "numpy"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "factorsums"
 version = "0.3.0"
-description = "A project for factor sums calculations using SageMath"
+description = "A project for prime partition generation using SageMath and Cython."
+license = "MIT"
+authors = [{ name = "Eric Page", email = "genamthi@gmail.com" }]
 readme = "README.md"
 requires-python = "~=3.12"
-# PyPI dependencies would go here, but we are managing all with conda via pixi.
 dependencies = []
 
-[tool.hatch.build.targets.wheel.hooks.cython]
-dependencies = ["cython>=3.0.0", "numpy"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
-# This section tells hatch to compile all .py and .pyx files it finds.
-# We will later configure this to be more specific.
-compile-py = true
+[tool.pixi.pypi-options]
+no-build-isolation = true
 
-# --- Pixi Configuration ---
+# --- Pixi Workspace and Environment Configuration ---
 
-[tool.pixi.project]
+[tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["linux-64"]
 
 [tool.pixi.dependencies]
 python = "~=3.12"
-sage = ">=10.6"
-cython = "*"
+sage = ">=10.6,<11"
 numpy = "*"
-pandas = "*"
-matplotlib = "*"
 psutil = "*"
 tqdm = "*"
+cython = "*"
+setuptools = "*"
 
 [tool.pixi.pypi-dependencies]
-factorsums = { path = ".", editable = true }
+factorsums = { path = "." }
 
-[tool.pixi.tasks]
-# Example task to run the main script
-generate = "python src/primepartgen.py --num-primes 1000 --batch-size 250"
+# --- Rattler-Build Packaging ---
 
-[tool.hatch.build.sources]
-"src/factorsums" = "src/factorsums" 
+[tool.rattler-build]
+build-dependencies = [ "python", "cython", "setuptools", "numpy", "sage" ]
+dependencies = [ "python", "sage", "numpy", "psutil", "tqdm" ]
