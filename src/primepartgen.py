@@ -23,12 +23,11 @@ class PPPGenerator:
     Generates partitions of primes into sums of two prime powers.
     This class encapsulates the configuration, state, and logic of the generation process.
     """
-    def __init__(self, num_primes: int, batch_size: int, num_groups: int, group_size: int):
+    def __init__(self, num_primes: int, batch_size: int, num_groups: int):
         # --- Configuration ---
         self.num_primes = num_primes
         self.batch_size = batch_size
         self.num_groups = num_groups
-        self.group_size = group_size
 
         # --- State ---
         self.prime_batch: Optional[np.ndarray] = None
@@ -55,8 +54,7 @@ class PPPGenerator:
         self.total_batches = self.num_primes // self.batch_size
         self.prime_batch.shape = (self.total_batches, self.batch_size)
         print(
-            f"Using {self.num_groups} process groups with batch size {self.batch_size}, "
-            f"and {self.group_size} threads per group."
+            f"Using {self.num_groups} worker processes with batch size {self.batch_size}."
         )
 
     def _run_multiprocessing_pool(self):
@@ -89,43 +87,7 @@ class PPPGenerator:
     def _process_batch_worker(self, prime_chunk: np.ndarray) -> list:
         """
         Worker function for the main multiprocessing Pool.
-        """
-        partitions_queue = Queue(maxsize=self.group_size * 10)
-        valid_results = []
-        lock = Lock()
-
-        threads = []
-        for _ in range(self.group_size):
-            t = Thread(
-                target=self._partition_consumer,
-                args=(partitions_queue, valid_results, lock),
-            )
-            t.daemon = True
-            t.start()
-            threads.append(t)
-
-        try:
-            twos = np.ones(self.batch_size, dtype=int) * 2
-            part_gen = fvp(prime_chunk, twos)
-
-            for part in part_gen:
-                if len(part) > 2:
-                    break
-                if len(part) == 2:
-                    task = (prime_chunk, part)
-                    partitions_queue.put(task)
-        finally:
-            for _ in range(self.group_size):
-                partitions_queue.put(None)
-            for t in threads:
-                t.join()
-
-        return valid_results
-
-    def _partition_consumer(self, q_in: Queue, results_list: list, list_lock: Lock):
-        """
-        Consumer thread worker. It takes partition vectors from the queue,
-        efficiently checks them for prime power pairs, and collates valid results.
+        Processes all partitions for a given prime_chunk.
         """
         local_results = {}
         # Helper to extract (base, exponent) from a known prime power
@@ -136,41 +98,40 @@ class PPPGenerator:
             base, exponent = val.perfect_power()
             return (base, exponent)
 
-        while True:
-            task = q_in.get()
-            if task is None:
-                with list_lock:
-                    results_list.append(local_results)
+        twos = np.ones(self.batch_size, dtype=int) * 2
+        part_gen = fvp(prime_chunk, twos)
+
+        for part in part_gen:
+            if len(part) > 2:
                 break
+            if len(part) == 2:
+                s, t = part
 
-            prime_vector, part = task
-            s, t = part
+                # Generate two smaller, tightly-scoped lookup sets.
+                s_lim = (min(s), max(s))
+                t_lim = (min(t), max(t))
+                s_lookup_set = set(prime_powers(s_lim[0], s_lim[1] + 1))
+                t_lookup_set = set(prime_powers(t_lim[0], t_lim[1] + 1))
 
-            # Generate two smaller, tightly-scoped lookup sets.
-            s_lim = (min(s), max(s))
-            t_lim = (min(t), max(t))
-            s_lookup_set = set(prime_powers(s_lim[0], s_lim[1] + 1))
-            t_lookup_set = set(prime_powers(t_lim[0], t_lim[1] + 1))
+                valid_mask = self._vectorized_partition_check(part, s_lookup_set, t_lookup_set)
 
-            valid_mask = self._vectorized_partition_check(part, s_lookup_set, t_lookup_set)
+                if np.any(valid_mask):
+                    valid_primes = prime_chunk[valid_mask]
+                    
+                    s_valid_iter = compress(s, valid_mask)
+                    t_valid_iter = compress(t, valid_mask)
 
-            if np.any(valid_mask):
-                valid_primes = prime_vector[valid_mask]
-                
-                s_valid_iter = compress(s, valid_mask)
-                t_valid_iter = compress(t, valid_mask)
+                    for n, s_val, t_val in zip(valid_primes, s_valid_iter, t_valid_iter):
+                        p1, j1 = get_pp_info(s_val)
+                        p2, j2 = get_pp_info(t_val)
 
-                for n, s_val, t_val in zip(valid_primes, s_valid_iter, t_valid_iter):
-                    p1, j1 = get_pp_info(s_val)
-                    p2, j2 = get_pp_info(t_val)
-
-                    if p1 <= p2:
-                        canonical_tuple = (p1, j1, p2, j2)
-                    else:
-                        canonical_tuple = (p2, j2, p1, j1)
-                    local_results.setdefault(n, set()).add(canonical_tuple)
-            q_in.task_done()
-
+                        if p1 <= p2:
+                            canonical_tuple = (p1, j1, p2, j2)
+                        else:
+                            canonical_tuple = (p2, j2, p1, j1)
+                        local_results.setdefault(n, set()).add(canonical_tuple)
+        
+        return [local_results]
 
     @staticmethod
     def _vectorized_partition_check(part: tuple, s_lookup_set: set, t_lookup_set: set) -> np.ndarray:
@@ -243,28 +204,20 @@ def main():
     )
     parser.add_argument("--num-primes", type=int, default=1000, help="Number of primes to generate data for.")
     parser.add_argument("--batch-size", type=int, default=250, help="Number of primes to process in each batch.")
-    parser.add_argument("--num-groups", type=int, default=None, help="Number of parallel process groups.")
-    parser.add_argument("--group-size", type=int, default=2, help="Number of consumer threads per group.")
-    parser.add_argument("--max-workers", type=int, default=None, help="Total parallel worker threads.")
+    parser.add_argument("--num-workers", type=int, default=None, help="Number of parallel worker processes.")
     args = parser.parse_args()
 
     if args.num_primes % args.batch_size != 0:
         parser.error("--num_primes must be divisible by --batch_size for array reshaping.")
 
-    num_groups = args.num_groups
-    group_size = args.group_size
-    if args.max_workers:
-        if args.max_workers % group_size != 0:
-            parser.error("--max-workers must be divisible by --group-size.")
-        num_groups = args.max_workers // group_size
-    elif not num_groups:
-        num_groups = psutil.cpu_count(logical=False) or 1
+    num_workers = args.num_workers
+    if not num_workers:
+        num_workers = psutil.cpu_count(logical=False) or 1
 
     generator = PPPGenerator(
         num_primes=args.num_primes,
         batch_size=args.batch_size,
-        num_groups=num_groups,
-        group_size=group_size
+        num_groups=num_workers
     )
     
     start_time = time.time()
