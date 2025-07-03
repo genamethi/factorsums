@@ -130,6 +130,7 @@ class PPPGenerator:
         local_results = {}
         # Helper to extract (base, exponent) from a known prime power
         def get_pp_info(val: Integer) -> Tuple[Integer, int]:
+            val = Integer(val)  # Explicitly cast to Sage Integer
             if val.is_prime(proof=False):
                 return (val, 1)
             base, exponent = val.perfect_power()
