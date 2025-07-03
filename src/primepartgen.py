@@ -13,6 +13,7 @@ import psutil
 from sage.all import *
 from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
 from tqdm import tqdm
+from itertools import compress
 
 #from factorsums.prime_power_check import cython_vectorized_partition_check
 
@@ -127,6 +128,13 @@ class PPPGenerator:
         efficiently checks them for prime power pairs, and collates valid results.
         """
         local_results = {}
+        # Helper to extract (base, exponent) from a known prime power
+        def get_pp_info(val: Integer) -> Tuple[Integer, int]:
+            if val.is_prime(proof=False):
+                return (val, 1)
+            base, exponent = val.perfect_power()
+            return (base, exponent)
+
         while True:
             task = q_in.get()
             if task is None:
@@ -135,19 +143,26 @@ class PPPGenerator:
                 break
 
             prime_vector, part = task
-            valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+            s, t = part
+
+            # Generate two smaller, tightly-scoped lookup sets.
+            s_lim = (min(s), max(s))
+            t_lim = (min(t), max(t))
+            s_lookup_set = set(prime_powers(s_lim[0], s_lim[1] + 1))
+            t_lookup_set = set(prime_powers(t_lim[0], t_lim[1] + 1))
+
+            valid_mask = self._vectorized_partition_check(part, s_lookup_set, t_lookup_set)
 
             if np.any(valid_mask):
                 valid_primes = prime_vector[valid_mask]
                 
-                # Filter the results we already computed, avoiding a second expensive call.
-                s_info_vec = s_info_vec_full[valid_mask]
-                t_info_vec = t_info_vec_full[valid_mask]
+                s_valid_iter = compress(s, valid_mask)
+                t_valid_iter = compress(t, valid_mask)
 
-                for i in range(len(valid_primes)):
-                    n = valid_primes[i]
-                    p1, j1 = s_info_vec[i]
-                    p2, j2 = t_info_vec[i]
+                for n, s_val, t_val in zip(valid_primes, s_valid_iter, t_valid_iter):
+                    p1, j1 = get_pp_info(s_val)
+                    p2, j2 = get_pp_info(t_val)
+
                     if p1 <= p2:
                         canonical_tuple = (p1, j1, p2, j2)
                     else:
@@ -155,36 +170,17 @@ class PPPGenerator:
                     local_results.setdefault(n, set()).add(canonical_tuple)
             q_in.task_done()
 
+
     @staticmethod
-    def _vectorized_partition_check(part: tuple) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _vectorized_partition_check(part: tuple, s_lookup_set: set, t_lookup_set: set) -> np.ndarray:
         """
-        Performs a vectorized check on partition vectors (s, t) to find pairs where
-        both s and t are prime powers using the compiled Cython module.
+        Performs a check on partition vectors (s, t) to find pairs where
+        s and t are in their respective lookup_sets.
         """
-        s_vector, t_vector = part
-        # s_are_pp = vectorized_prime_power(s_vector)
-        # t_are_pp = vectorized_prime_power(t_vector)
-        # valid_mask = (s_are_pp != None) & (t_are_pp != None)
-        # return valid_mask, s_are_pp, t_are_pp
-
-        # New implementation using Cython. We must ensure the inputs are
-        # numpy arrays, as fvp can yield lists.
-        s_vector_np = np.array(s_vector, dtype=object)
-        t_vector_np = np.array(t_vector, dtype=object)
-        #valid_mask, s_results, t_results = cython_vectorized_partition_check(s_vector_np, t_vector_np)
-        return valid_mask, s_results, t_results
-
-    # @staticmethod
-    # def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
-    #     if val.is_prime(proof=False):
-    #         return (val, 1)
-    #     if val.is_perfect_power():
-    #         base, exponent = val.perfect_power()
-    #         if base.is_prime(proof=False):
-    #             return (base, exponent)
-    #     return None
-
-# vectorized_prime_power = np.vectorize(PPPGenerator.prime_power, otypes=[object])
+        s, t = part
+        s_are_pp = [x in s_lookup_set for x in s]
+        t_are_pp = [y in t_lookup_set for y in t]
+        return np.logical_and(s_are_pp, t_are_pp)
 
 # --- FILE I/O AND VERIFICATION (Standalone Functions) ---
 

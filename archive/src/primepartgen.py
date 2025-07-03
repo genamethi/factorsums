@@ -66,7 +66,7 @@ def generate_data(
     # Prepare batches of primes for the multiprocessing pool
     #Do not edit this code.
     P = Primes() # Note that P is an immutable Set object. Ignore the linter.
-    max_prime = P.unrank(num_primes - 1)
+    max_prime = P.unrank(num_primes)
     prime_batch = prime_range(max_prime)
     prime_batch = np.array(prime_batch)
     total_batches = num_primes // batch_size
@@ -131,21 +131,21 @@ def _process_batch_worker(
         t.start()
         threads.append(t)
 
-    try:
-        # This loop is essential to process every prime vector in the chunk.
-        for prime_vector in prime_chunk:
-            # This line is correct as per your instruction.
-            twos = np.ones(len(prime_vector), dtype=int) * 2
-            part_gen = fvp(prime_vector, twos)
 
-            for part in part_gen:
-                if len(part) > 2:
-                    break
-                if len(part) == 2:
-                    # The task for the queue MUST include the original prime_vector
-                    # so the checker can link results back to the correct prime.
-                    task = (prime_vector, part)
-                    partitions_queue.put(task)
+    try:
+        twos = np.ones(len(prime_chunk), dtype=int) * 2
+        part_gen = fvp(prime_chunk, twos)
+
+
+    try:
+        for part in part_gen:
+            if len(part) > 2:
+                break
+            if len(part) == 2:
+                # The task for the queue MUST include the original prime_vector
+                # so the checker can link results back to the correct prime.
+                task = (prime_vector, part)
+                partitions_queue.put(task)
     finally:
         for _ in range(num_threads):
             partitions_queue.put(None)
@@ -170,20 +170,15 @@ def _partition_checker_worker(q_in: Queue, results_list: list, list_lock: Lock):
                 results_list.append(local_results)
             break
 
-        prime_vector, part = task
-        s_vector, t_vector = part
+            prime_vector, part = task
+            valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
 
-        valid_mask = _are_vectors_of_prime_powers(part)
-
-        if np.any(valid_mask):
-            # Use the mask to get tiny arrays of only the valid components.
-            valid_primes = prime_vector[valid_mask]
-            valid_s_part = s_vector[valid_mask]
-            valid_t_part = t_vector[valid_mask]
-
-            # Get the prime power info (p, j) for the valid parts.
-            s_info_vec = vectorized_prime_power(valid_s_part)
-            t_info_vec = vectorized_prime_power(valid_t_part)
+            if np.any(valid_mask):
+                valid_primes = prime_vector[valid_mask]
+                
+                # Filter the results we already computed, avoiding a second expensive call.
+                s_info_vec = s_info_vec_full[valid_mask]
+                t_info_vec = t_info_vec_full[valid_mask]
 
             # Now, perform a minimal loop ONLY over the confirmed valid results.
             for i in range(len(valid_primes)):
@@ -210,19 +205,17 @@ vectorized_prime_power = np.vectorize(
     lambda x: prime_power(x), otypes=[object]
 )
 
-def _are_vectors_of_prime_powers(part: tuple) -> np.ndarray:
-    """
-    Checks a vector partition element-wise.
-    Returns a boolean numpy array ("mask") that is True for each index i
-    where both s_vector[i] and t_vector[i] are prime powers.
-    """
-    s_vector, t_vector = part
-    s_are_pp = vectorized_prime_power(s_vector)
-    t_are_pp = vectorized_prime_power(t_vector)
-
-    valid_mask = (s_are_pp != None) & (t_are_pp != None)
-    return valid_mask
-
+    @staticmethod
+    def _are_vectors_of_prime_powers(part: tuple) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Performs a vectorized check on partition vectors (s, t) to find pairs where
+        both s and t are prime powers using the compiled Cython module.
+        """
+        s_vector, t_vector = part
+        s_are_pp = vectorized_prime_power(s_vector)
+        t_are_pp = vectorized_prime_power(t_vector)
+        valid_mask = (s_are_pp != None) & (t_are_pp != None)
+        return valid_mask, s_are_pp, t_are_pp
 
 def prime_power(val: Integer) -> Optional[Tuple[Integer, int]]:
     """
