@@ -1,0 +1,365 @@
+ python src/primepartgen.py --num-primes 500 --batch-size 10 --num-groups 6 --group-size 2
+Generating partitions for the first 500 primes...
+Preparing prime batches...
+Using 6 process groups with batch size 10, and 2 threads per group.
+Starting multiprocessing pool...
+Processing Batches:   0%|                                                                                                      | 0/50 [00:00<?, ?it/s]Exception in thread Thread-1 (_partition_consumer):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-3 (_partition_consumer):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-2 (_partition_consumer):
+Exception in thread Thread-1 (_partition_consumer):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-4 (_partition_consumer):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-2 (_partition_consumer):
+Traceback (most recent call last):
+Exception in thread Thread-1 (_partition_consumer):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-1 (_partition_consumer):
+Traceback (most recent call last):
+Exception in thread Thread-1 (_partition_consumer):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+Exception in thread Thread-2 (_partition_consumer):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+Exception in thread Thread-2 (_partition_consumer):
+Traceback (most recent call last):
+Exception in thread Thread-2 (_partition_consumer):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+    self.run()
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self.run()
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    self.run()
+    self.run()
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+    self._target(*self._args, **self._kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    self._target(*self._args, **self._kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    self._target(*self._args, **self._kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    self._target(*self._args, **self._kwargs)
+    self._target(*self._args, **self._kwargs)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    self._target(*self._args, **self._kwargs)
+    self._target(*self._args, **self._kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    self._target(*self._args, **self._kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+    self._target(*self._args, **self._kwargs)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    self._target(*self._args, **self._kwargs)
+    s_are_pp = vectorized_prime_power(s_vector)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 137, in _partition_consumer
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    s_are_pp = vectorized_prime_power(s_vector)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    s_are_pp = vectorized_prime_power(s_vector)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    s_are_pp = vectorized_prime_power(s_vector)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    s_are_pp = vectorized_prime_power(s_vector)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    s_are_pp = vectorized_prime_power(s_vector)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+    valid_mask, s_info_vec_full, t_info_vec_full = self._vectorized_partition_check(part)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+    s_are_pp = vectorized_prime_power(s_vector)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 174, in _vectorized_partition_check
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    s_are_pp = vectorized_prime_power(s_vector)
+    s_are_pp = vectorized_prime_power(s_vector)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+    s_are_pp = vectorized_prime_power(s_vector)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    s_are_pp = vectorized_prime_power(s_vector)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+    s_are_pp = vectorized_prime_power(s_vector)
+    return self._call_as_normal(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+    return self._call_as_normal(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2544, in __call__
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._call_as_normal(*args, **kwargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._call_as_normal(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._vectorize_call(func=func, args=vargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._vectorize_call(func=func, args=vargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2537, in _call_as_normal
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._vectorize_call(func=func, args=vargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    return self._vectorize_call(func=func, args=vargs)
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._vectorize_call(func=func, args=vargs)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    return self._vectorize_call(func=func, args=vargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    outputs = ufunc(*args, out=...)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    return self._vectorize_call(func=func, args=vargs)
+              ^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    outputs = ufunc(*args, out=...)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+    outputs = ufunc(*args, out=...)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 2625, in _vectorize_call
+    if val.is_prime(proof=False):
+    outputs = ufunc(*args, out=...)
+    outputs = ufunc(*args, out=...)
+    outputs = ufunc(*args, out=...)
+              ^^^^^^^^^^^^^^^^^^^^^
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+    outputs = ufunc(*args, out=...)
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+    if val.is_prime(proof=False):
+    outputs = ufunc(*args, out=...)
+    if val.is_prime(proof=False):
+    outputs = ufunc(*args, out=...)
+    outputs = ufunc(*args, out=...)
+    outputs = ufunc(*args, out=...)
+       ^^^^^^^^^^^^
+              ^^^^^^^^^^^^^^^^^^^^^
+              ^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+       ^^^^^^^^^^^^
+    outputs = ufunc(*args, out=...)
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+AttributeError: 'int' object has no attribute 'is_prime'
+    if val.is_prime(proof=False):
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+    if val.is_prime(proof=False):
+    if val.is_prime(proof=False):
+              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'is_prime'
+       ^^^^^^^^^^^^
+       ^^^^^^^^^^^^
+    if val.is_prime(proof=False):
+       ^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'is_prime'
+       ^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'is_prime'
+AttributeError: 'int' object has no attribute 'is_prime'
+AttributeError: 'int' object has no attribute 'is_prime'
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 181, in prime_power
+    if val.is_prime(proof=False):
+AttributeError: 'int' object has no attribute 'is_prime'
+    if val.is_prime(proof=False):
+    if val.is_prime(proof=False):
+    if val.is_prime(proof=False):
+       ^^^^^^^^^^^^
+       ^^^^^^^^^^^^
+       ^^^^^^^^^^^^
+    if val.is_prime(proof=False):
+       ^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'is_prime'
+AttributeError: 'int' object has no attribute 'is_prime'
+       ^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'is_prime'
+AttributeError: 'int' object has no attribute 'is_prime'
+AttributeError: 'int' object has no attribute 'is_prime'
+Processing Batches:   0%|                                                                                                      | 0/50 [00:13<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/multiprocessing/pool.py", line 856, in next
+    item = self._items.popleft()
+           ^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from an empty deque
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 288, in <module>
+    main() 
+    ^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 276, in main
+    generated_data = generator.run()
+                     ^^^^^^^^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 41, in run
+    self._run_multiprocessing_pool()
+  File "/home/erpage159/fluid/forprofit/factorsums/src/primepartgen.py", line 71, in _run_multiprocessing_pool
+    for worker_results in pbar:
+                          ^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/site-packages/tqdm/std.py", line 1181, in __iter__
+    for obj in iterable:
+               ^^^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/multiprocessing/pool.py", line 451, in <genexpr>
+    return (item for chunk in result for item in chunk)
+                              ^^^^^^
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/multiprocessing/pool.py", line 861, in next
+    self._cond.wait(timeout)
+  File "/home/erpage159/fluid/forprofit/factorsums/.pixi/envs/default/lib/python3.12/threading.py", line 355, in wait
+    waiter.acquire()
+  File "signals.pyx", line 355, in cysignals.signals.python_check_interrupt
+KeyboardInterrupt
+
+ python src/factorsums/sage_factor_sums.py
+usage: sage_factor_sums.py [-h] n
+sage_factor_sums.py: error: the following arguments are required: n
+ python src/factorsums/sage_factor_sums.py 500
+An unexpected error occurred: 'int' object has no attribute 'is_prime'
+ vim src/factorsums/sage_factor_sums.
+ vim src/factorsums/sage_factor_sums.py
+ python src/factorsums/sage_factor_sums.py 500
+500 is not a prime number.
+ python src/factorsums/sage_factor_sums.py 23
+23 is a prime number. Searching for partitions...
+Total unique tuples found: 2
+
+Detailed partitions:
+(2, 19, 2, 1)
+4, 19
+2^2 + 19^1 = 23
+--------------------
+(2, 7, 4, 1)
+16, 7
+2^4 + 7^1 = 23
+--------------------
+ 
+    ♥ 06:34:39   CPU: 9.93% | RAM: 1/15GB   0ms                                                    testing ↑6    ?15 ~2 -1 🐍 (factorsums)
+  home/fluid/forprofit/factorsums   
+

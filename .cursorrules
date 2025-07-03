@@ -4,3 +4,13 @@ import pathlib
 source(pathlib.Path(__file__).parent.joinpath("Context"))
 
 # The current file is `tests/test_sage_factor_sums.py`. 
+
+--Project plans in @Context may be a bit out of date.
+--We are no longer using micromamba, but pixi.
+--This project has taken a turn into Cython territory.
+--NCIED is my #1 rule and it's the default.
+--It stands for No Changes In Editor, Discuss.
+----We discuss and gain CERTAINTY before we write
+----any code. We then start small and build up.
+--I do have a tendency to optimize too early.
+--I need to get better at that.

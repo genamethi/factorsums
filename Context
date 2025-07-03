@@ -151,23 +151,46 @@ This section outlines potential future improvements for test data storage and co
 
 # Cython Implementation Plan (As of July 2, 2025)
 
-This section outlines the plan to optimize the core partition checking logic by replacing the Python-level `np.vectorize` call with a compiled Cython module.
+This section outlines the plan to optimize the core partition checking logic by leveraging `gmpy2` and Cython, ensuring both mathematical exactness and high performance.
 
-- **Goal:** Eliminate the performance bottleneck caused by iterating over NumPy object arrays of Sage `Integer` types and calling their methods from Python.
+- **Goal:** Eliminate the performance bottleneck of operating on arbitrary-precision integers in Python.
 
-- **Strategy:** Create a Cython module that `cimport`s types and functions directly from Sage's own installed `.pyx` and `.pxd` files. This allows for C-level operations on Sage objects, avoiding Python interpreter overhead.
+- **Core Problem:** Standard NumPy arrays (`dtype=int64`) lack the required precision for large numbers. NumPy arrays of Python/Sage objects (`dtype=object`) are precise but lose all vectorization benefits, requiring slow, element-by-element iteration in Python.
 
-- **Local Sage Source Path:** The necessary Sage source files (`.pyx`, `.pxd`) are located within the pixi environment at: `/.pixi/envs/default/lib/python3.12/site-packages/sage/`
-
-- **Key Sage Source Files for Reference:**
-    - **Integer Type:** `sage/rings/integer.pyx` (https://github.com/sagemath/sage/blob/master/src/sage/rings/integer.pyx)
-    - **Power/Primality Functions:** `sage/arith/power.pyx` (https://github.com/sagemath/sage/blob/master/src/sage/arith/power.pyx)
-    - **Vector Partitions:** `sage/combinat/fast_vector_partitions.pyx` (https://github.com/sagemath/sage/blob/develop/src/sage/combinat/fast_vector_partitions.pyx)
-    - **Misc Helpers:** `sage/arith/misc.py` (https://github.com/sagemath/sage/blob/master/src/sage/arith/misc.py)
+- **Strategy: `gmpy2` + Cython:**
+    - We will use the `gmpy2` library, which provides direct C-level Python bindings to the GMP arbitrary-precision arithmetic library (the same one Sage uses).
+    - Data will be held in NumPy arrays with `dtype=object`, where each element is a `gmpy2.mpz` instance. This guarantees precision.
+    - The performance-critical functions will be written in Cython. These functions will take the NumPy arrays as input, then `cimport` `gmpy2`'s C-level definitions (`mpz_t`) to operate directly on the underlying GMP integers. This bypasses the Python interpreter entirely for the main loop, achieving C-level speed while maintaining arbitrary precision.
 
 - **Implementation Approach:**
-    1.  Create `src/factorsums/prime_power_check.pyx`.
-    2.  The module will expose a Python-visible function (`cython_vectorized_partition_check`) that accepts two NumPy arrays (`s_vector`, `t_vector`).
-    3.  Internally, the function will loop over the arrays, cast the elements to C-level `Integer` types, and use `cdef` functions from `sage.arith.power` to perform primality and power checks.
-    4.  It will return three NumPy arrays: a boolean `valid_mask`, and two object arrays containing the `(base, exp)` results for each input vector. The final filtering will be done in Python using this mask.
-    5.  The `pyproject.toml` will be updated to define this file as a setuptools extension module, ensuring it is compiled during installation. 
+    1. Add `gmpy2` as a project dependency.
+    2. Create a `src/factorsums/fast_check.pyx` module (or similar).
+    3. This module will expose a Python-visible function (e.g., `are_prime_powers`) that accepts NumPy object arrays of `gmpy2.mpz` numbers.
+    4. The function will `cimport` from `gmpy2.pxd` to access the C-level `mpz_t` struct. It will iterate through the input arrays, extracting the `mpz_t` pointer from each `gmpy2.mpz` object.
+    5. Primality checks will be performed using GMP functions accessed via `gmpy2`'s C-API.
+    6. The function will return a boolean NumPy array indicating which numbers are prime powers.
+    7. The `pyproject.toml` will be updated to define this file as a setuptools extension module, ensuring it is compiled during installation.
+
+# Key Sage Files (As of July 2, 2025)
+
+This section documents the roles of key SageMath source files relevant to our project, based on our code investigation.
+
+- **`sage/rings/integer.pyx`:**
+    - This is the most low-level implementation of the core data type we are concerned with, the Sage `Integer`.
+    - It is a Cython file that wraps the GMP (GNU Multiple Precision Arithmetic) C library, providing the `Integer` object with its arbitrary-precision capabilities.
+    - Its `__array_interface__` reveals how Sage `Integer`s are converted to NumPy arrays, either as native integer types or as generic Python objects (`dtype='O'`) if they are too large.
+
+- **`sage/combinat/fast_vector_partitions.pyx`:**
+    - This file contains the `fast_vector_partitions` (`fvp`) algorithm.
+    - It is a highly specialized Cython module designed to generate vector partitions in batches.
+    - Crucially, while it may take Sage `Integer`s as input, its internal logic and `yield` statements produce standard Python `list`s of Python `int`s, not Sage objects. This is a key bottleneck and a source of our `AttributeError`.
+
+- **`sage.arith.power` & `sage.arith.misc`:**
+    - These files contain high-level, Python-callable functions for number theory, such as `is_prime_power` and the `prime_powers` generator.
+    - While convenient, they are not low-level C functions. Calling them in a tight loop from Python (or even basic Cython) incurs significant interpreter overhead.
+    - The `prime_powers` generator is analogous to `prime_range` but for prime powers.
+
+- **`sage.rings.prime.Primes`:**
+    - This is the class behind the `Primes()` iterator.
+    - It is primarily Python-oriented, making it easy to use for iterating through primes.
+    - This convenience makes it ideal for low-memory applications but less suited for situations demanding maximum speed, as each iteration involves Python overhead. 

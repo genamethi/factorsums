@@ -8,14 +8,13 @@ from pathlib import Path
 from queue import Queue
 from threading import Lock, Thread
 from typing import Dict, List, Optional, Set, Tuple
-
 import numpy as np
 import psutil
-from sage.all import (Integer, Primes, is_prime, prime_range)
+from sage.all import *
 from sage.combinat.fast_vector_partitions import fast_vector_partitions as fvp
 from tqdm import tqdm
 
-from factorsums.prime_power_check import cython_vectorized_partition_check
+#from factorsums.prime_power_check import cython_vectorized_partition_check
 
 
 class PPPGenerator:
@@ -167,7 +166,12 @@ class PPPGenerator:
         # t_are_pp = vectorized_prime_power(t_vector)
         # valid_mask = (s_are_pp != None) & (t_are_pp != None)
         # return valid_mask, s_are_pp, t_are_pp
-        valid_mask, s_results, t_results = cython_vectorized_partition_check(s_vector, t_vector)
+
+        # New implementation using Cython. We must ensure the inputs are
+        # numpy arrays, as fvp can yield lists.
+        s_vector_np = np.array(s_vector, dtype=object)
+        t_vector_np = np.array(t_vector, dtype=object)
+        #valid_mask, s_results, t_results = cython_vectorized_partition_check(s_vector_np, t_vector_np)
         return valid_mask, s_results, t_results
 
     # @staticmethod

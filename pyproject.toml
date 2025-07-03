@@ -12,6 +12,9 @@ readme = "README.md"
 requires-python = "~=3.12"
 dependencies = []
 
+[project.scripts]
+primepartgen = "factorsums.primepartgen:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -26,7 +29,7 @@ platforms = ["linux-64"]
 
 [tool.pixi.dependencies]
 python = "~=3.12"
-sage = ">=10.6,<11"
+sage = ">=10.6,<11" 
 numpy = "*"
 psutil = "*"
 tqdm = "*"
@@ -34,7 +37,7 @@ cython = "*"
 setuptools = "*"
 
 [tool.pixi.pypi-dependencies]
-factorsums = { path = "." }
+factorsums = { path = ".", editable = true }
 
 # --- Rattler-Build Packaging ---
 
