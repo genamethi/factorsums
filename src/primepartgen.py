@@ -137,12 +137,31 @@ class PPPGenerator:
         twos = np.ones(self.batch_size, dtype=int) * 2
         part_gen = fvp(prime_chunk, twos)
 
-        for part in part_gen:
-            # We are only interested in partitions of length 2
-            if len(part) > 2:
-                break
-            if len(part) == 2:
-                valid_mask = self._vectorized_partition_check(part)
+        # 1. Consume generator and filter for length-2 partitions
+        len2_partitions = [part for part in part_gen if len(part) == 2]
+        if not len2_partitions:
+            return [{}]
+
+        # 2. Form S and T arrays from the partitions
+        s_vectors = [p[0] for p in len2_partitions]
+        t_vectors = [p[1] for p in len2_partitions]
+        S_array = np.array(s_vectors, dtype=object)
+        T_array = np.array(t_vectors, dtype=object)
+
+        # 3. Process one prime at a time by slicing the columns
+        for i, n in enumerate(prime_chunk):
+            # 3a. Slice columns to get all pairs for this prime
+            s_col = S_array[:, i]
+            t_col = T_array[:, i]
+
+            # 3b. Stack, sort internally for commutativity, and find unique pairs
+            pairs = np.column_stack((s_col, t_col))
+            pairs = np.sort(pairs, axis=1)
+            unique_pairs = np.unique(pairs, axis=0)
+
+            # 3c. Check the unique pairs for prime powers
+            s_unique, t_unique = unique_pairs[:, 0], unique_pairs[:, 1]
+            valid_mask = self._vectorized_partition_check([s_unique, t_unique])
 
                 if np.any(valid_mask):
                     valid_primes = prime_chunk[valid_mask]
@@ -159,7 +178,7 @@ class PPPGenerator:
                             canonical_tuple = (p1, j1, p2, j2)
                         else:
                             canonical_tuple = (p2, j2, p1, j1)
-                        local_results.setdefault(n, set()).add(canonical_tuple)
+                        local_results.setdefault(n, Set()).add(canonical_tuple)
         
         return [local_results]
 
@@ -174,6 +193,8 @@ class PPPGenerator:
         #Make this a helpful docstring that tells the user about the data flow.
         """
         s, t = part
+        s = np.array(s, dtype=object)
+        t = np.array(t, dtype=object)
 
         # --- Upfront Filtering: A significant optimization ---
         # A partition component pair (s_i, t_i) can only be valid if both > 1.
