@@ -1,7 +1,7 @@
 [project]
 name = "factorsums"
 version = "0.3.0"
-description = "A project for prime partition generation using SageMath and Cython."
+description = "A project for prime partition generation using SageMath."
 license = "MIT"
 authors = [{ name = "Eric Page", email = "genamthi@gmail.com" }]
 readme = "README.md"

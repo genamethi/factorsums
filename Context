@@ -75,23 +75,19 @@
 --Another persistent linter error occurs when using `Primes().rank(Integer(x), proof=False)`, where the linter expects a `proof` argument for a `Python int`, even after explicit casting to `Sage Integer`. This can be safely ignored with `# type: ignore`.
 --Any new linter errors that occur with otherwise documented Sage functionality can be ignored, but a comment must be added.
 
-# Core Generation Scripts (As of June 30, 2025)
+# Current Status and Strategy (As of July 3, 2025)
+
+- **Focus:** The immediate goal is to create a performant pure-Python baseline before re-introducing Cython. The current parallel implementation is significantly slower than expected, indicating a major bottleneck in the worker process logic.
+- **Data Pipeline Concern:** The low CPU utilization during runs suggests a potential bottleneck in the data pipeline itself, where workers may be starved of data. The next step is to use the newly-added `--profile` flag to get a precise performance breakdown of the worker function to confirm the bottleneck's location.
+- **Key Algorithmic Insight ("Power of Two" Heuristic):** A crucial mathematical simplification has been identified. For an odd prime `p` to be the sum of two prime powers `a` and `b`, one of `a` or `b` *must* be a power of 2. This allows for a much more efficient check: instead of two expensive `is_prime_power()` calls, the check becomes `(is_power_of_2(a) and is_prime_power(b)) or (is_power_of_2(b) and is_prime_power(a))`. This will be the basis for the next implementation attempt after profiling is complete.
+
+# Core Generation Scripts (As of July 3, 2025)
 
 - **`src/primepartgen.py` (Primary Generator):**
-    - The script now implements a highly efficient, two-level parallel architecture.
-    - **Level 1 (Process Pool):** A `multiprocessing.Pool` distributes chunks of prime *vectors* to worker processes. This minimizes inter-process communication by giving each worker a large, independent set of calculations.
-    - **Level 2 (Threaded Producer-Consumer):** Inside each worker, a producer-consumer model is used.
-        - The **Producer** (main thread) iterates through its prime vectors, calling `fast_vector_partitions` (`fvp`) on each entire vector. It then disassembles the resulting vector partitions into `(prime_vector, partition)` tasks for a shared queue.
-        - The **Consumers** (thread pool) pull these tasks and perform vectorized primality checks using a `numpy.vectorize` wrapper around the core `prime_power` function. This design keeps the data vectorized for as long as possible.
-    - The final output is a dictionary mapping each prime to a NumPy array of its valid partitions.
-
-- **`tests/generate_test_data.py` (Future Orchestrator/Verifier):**
-    - This script is being refactored. Its previous generation logic is now deprecated.
-    - **Future Role:** It will serve as a high-level driver. Its responsibilities will be to:
-        1.  Call the core generation logic from `src/primepartgen.py`.
-        2.  Run the rigorous `verify_data` function on the generated output.
-        3.  Handle file I/O, archiving, and other orchestration tasks.
-    - This separates the core algorithm from the data management and verification workflow.
+    - The script is encapsulated in a `PPPGenerator` class.
+    - It uses a single level of parallelism: a `multiprocessing.Pool` distributes chunks of prime vectors to worker processes. The previous two-level (process + thread) model was removed as the PARI/GP library used by Sage is not thread-safe, which was causing segmentation faults.
+    - Each worker process receives a prime vector, calls `fast_vector_partitions` (`fvp`), and iterates through the resulting partitions.
+    - For each partition, a check function determines which pairs consist of two prime powers. The logic for this check is the primary focus of our performance investigation.
 
 # Future Architecture and Refactoring (TODO)
 
@@ -155,7 +151,7 @@ This section outlines the plan to optimize the core partition checking logic by 
 
 - **Goal:** Eliminate the performance bottleneck of operating on arbitrary-precision integers in Python.
 
-- **Core Problem:** Standard NumPy arrays (`dtype=int64`) lack the required precision for large numbers. NumPy arrays of Python/Sage objects (`dtype=object`) are precise but lose all vectorization benefits, requiring slow, element-by-element iteration in Python.
+- **Core Problem:** Standard NumPy arrays (`dtype=int64`) lack the required precision for large numbers. NumPy arrays of Python/Sage objects (`dtype='O'`) are precise but lose all vectorization benefits, requiring slow, element-by-element iteration in Python.
 
 - **Strategy: `gmpy2` + Cython:**
     - We will use the `gmpy2` library, which provides direct C-level Python bindings to the GMP arbitrary-precision arithmetic library (the same one Sage uses).

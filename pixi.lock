@@ -1159,7 +1159,7 @@ packages:
 - pypi: ./
   name: factorsums
   version: 0.3.0
-  sha256: 182d8743c5f43a20c3a9d25d076aadc19bffa365326b0525dbcfa833829d4bf1
+  sha256: 2973b90563e13ffe3735290e9352a963bbcd470e11af3641a7fc060fa52c0368
   requires_python: ~=3.12
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/linux-64/fflas-ffpack-2.5.0-h4f9960b_0.conda
