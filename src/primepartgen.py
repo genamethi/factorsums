@@ -119,6 +119,20 @@ class PPPGenerator:
         Processes all partitions for a given prime_chunk.
         """
         local_results = {}
+        # Helper to extract (base, exponent) from a known prime power
+        def get_pp_info(val: Integer) -> Tuple[Integer, int]:
+            val = Integer(val)
+            # Check if it's a power of two first using the fast bitwise check
+            if (val > 1) and ((val & (val - 1)) == 0):
+                # Use .log(2) which is exact for Sage Integers
+                return (Integer(2), val.log(2))
+            
+            # Fallback to general prime power check for other numbers
+            if val.is_prime(proof=False):
+                return (val, 1)
+            base, exponent = val.perfect_power()
+            return (base, exponent)
+
         # The fvp generator requires a vector of '2's to produce 2-part partitions.
         twos = np.ones(self.batch_size, dtype=int) * 2
         part_gen = fvp(prime_chunk, twos)
@@ -128,13 +142,24 @@ class PPPGenerator:
             if len(part) > 2:
                 break
             if len(part) == 2:
-                # The check function now does all the heavy lifting and returns
-                # a dictionary of {prime: set_of_partition_tuples}.
-                partition_results = self._vectorized_partition_check(part, prime_chunk)
-                
-                # Merge the results into the worker's local dictionary.
-                for p, partitions in partition_results.items():
-                    local_results.setdefault(p, set()).update(partitions)
+                valid_mask = self._vectorized_partition_check(part)
+
+                if np.any(valid_mask):
+                    valid_primes = prime_chunk[valid_mask]
+                    s, t = part
+                    s_valid_iter = compress(s, valid_mask)
+                    t_valid_iter = compress(t, valid_mask)
+
+                    for n, s_val, t_val in zip(valid_primes, s_valid_iter, t_valid_iter):
+                        p1, j1 = get_pp_info(s_val)
+                        p2, j2 = get_pp_info(t_val)
+
+                        # Create a canonical representation of the tuple
+                        if p1 < p2 or (p1 == p2 and j1 <= j2):
+                            canonical_tuple = (p1, j1, p2, j2)
+                        else:
+                            canonical_tuple = (p2, j2, p1, j1)
+                        local_results.setdefault(n, set()).add(canonical_tuple)
         
         return [local_results]
 
@@ -142,86 +167,66 @@ class PPPGenerator:
    #fvp returns lists of lists, I'm so think this should be list for the type hint
     def _vectorized_partition_check(part: tuple) -> np.ndarray:
         """
-        Applies the "Two Paths" optimization to partition vectors (s, t).
+        Performs a check on partition vectors (s, t) to find pairs where
+        s and t are in their respective lookup_sets.
 
-        This function separates numbers in each vector into two paths:
-        1. Powers of Two: Handled with a fast bitwise check and log2.
-        2. Other Numbers: Handled with a slower, vectorized Sage 'prime_power' check.
-
-        It returns a dictionary mapping each prime in the original chunk to a
-        set of its valid, canonicalized partitions.
+        #Don't put things about it being optimized, that's embarassing.
+        #Make this a helpful docstring that tells the user about the data flow.
         """
         s, t = part
-        results = {}
 
-        # --- Helper function to check for prime powers (p^k) ---
-        def prime_power(val: int) -> Optional[Tuple[Integer, int]]:
-            """
-            Checks if a number is a prime power (p^k, where p is prime and k >= 1).
-            Returns a tuple (p, k) if it is, otherwise None.
-            """
+        # --- Upfront Filtering: A significant optimization ---
+        # A partition component pair (s_i, t_i) can only be valid if both > 1.
+        # This single check removes a vast number of invalid pairs upfront.
+        initial_mask = (s > 1) & (t > 1)
+        
+        # If no pairs are potentially valid, exit early.
+        if not np.any(initial_mask):
+            return np.zeros_like(s, dtype=bool)
+
+        # Create filtered arrays to run checks on the smaller, valid subset.
+        s_filtered = s[initial_mask]
+        t_filtered = t[initial_mask]
+
+        # --- Define Lightweight Vectorized Check Functions ---
+
+        def is_power_of_two_vect(arr: np.ndarray) -> np.ndarray:
+            """Vectorized check for powers of two."""
+            # This check is inherently safe for arr > 1 due to the upfront filter.
+            return (arr & (arr - 1)) == 0
+
+        #this more or less is the function we want to be vectorized
+        def is_prime_power_helper(n_int: int) -> bool:
+            """Scalar helper to check if a number is a prime power (and not 1)."""
             #not convinced we need to check <=1 
             #why do the zeros and ones make it htis far in the data stream?
-            if val <= 1: return None
-            val = Integer(val)
-            if val.is_prime(proof=False):
-                return (val, 1)
-
+            # The upfront filter makes this check redundant, but it's kept for safety.
+            if n_int <= 1:
+                return False
+            n = Integer(n_int)
+            if n.is_prime(proof=False): return True
             #We will remove this optimization in the cython version
-            if val.is_perfect_power():
-                base, exponent = val.perfect_power()
-                if base.is_prime(proof=False):
-                    return (base, exponent)
-            return None
-
-        # --- Process a single vector (s or t) and return computed tuples ---
-        def process_vector(arr: np.ndarray) -> np.ndarray:
-            # This array will hold the (base, exp) tuples or None.
-            arr_results = np.full(arr.shape, None, dtype=object)
-
-            # Path 1: Powers of Two (fast path)
-            is_pow2_mask = (arr > 1) & ((arr & (arr - 1)) == 0)
-            if np.any(is_pow2_mask):
-                pow2_numbers = arr[is_pow2_mask]
-                exponents = np.log2(pow2_numbers)
-                # Place (2, exp) tuples into the results array
-                arr_results[is_pow2_mask] = [(Integer(2), exp) for exp in exponents]
-
-            # Path 2: Other Numbers (slower path)
-            is_other_mask = ~is_pow2_mask
-            if np.any(is_other_mask):
-                other_numbers = arr[is_other_mask]
-                vectorized_pp_check = np.vectorize(prime_power, otypes=[object])
-                # Place results (which are tuples or None) into the results array
-                arr_results[is_other_mask] = vectorized_pp_check(other_numbers)
-            
-            return arr_results
-
-        # --- Execute processing and combine results ---
-        s_results = process_vector(s)
-        t_results = process_vector(t)
-
-        # Find where BOTH s and t have a valid prime power partition.
-        final_mask = (s_results != None) & (t_results != None)
-
-        if np.any(final_mask):
-            # Filter down to only the valid pairs
-            valid_primes = prime_chunk[final_mask]
-            s_final = s_results[final_mask]
-            t_final = t_results[final_mask]
-
-            for n, s_tuple, t_tuple in zip(valid_primes, s_final, t_final):
-                p1, j1 = s_tuple
-                p2, j2 = t_tuple
-                
-                # Create a canonical representation of the tuple
-                if p1 < p2 or (p1 == p2 and j1 <= j2):
-                    canonical_tuple = (p1, j1, p2, j2)
-                else:
-                    canonical_tuple = (p2, j2, p1, j1)
-                results.setdefault(n, set()).add(canonical_tuple)
+            if not n.is_perfect_power(): return False
+            base, _ = n.perfect_power()
+            return base.is_prime(proof=False)
         
-        return results
+        is_prime_power_vect = np.vectorize(is_prime_power_helper, otypes=[bool])
+
+        # --- Calculate Component-wise Validity on the FILTERED data ---
+        s_is_pow2 = is_power_of_two_vect(s_filtered)
+        s_is_pp = is_prime_power_vect(s_filtered)
+        
+        t_is_pow2 = is_power_of_two_vect(t_filtered)
+        t_is_pp = is_prime_power_vect(t_filtered)
+
+        # This sub_mask corresponds to the filtered arrays.
+        sub_mask = (s_is_pow2 & t_is_pp) | (s_is_pp & t_is_pow2)
+
+        # --- Reconstruct the final mask for the original array shape ---
+        final_mask = np.zeros_like(s, dtype=bool)
+        final_mask[initial_mask] = sub_mask
+        
+        return final_mask
 
 
 # --- FILE I/O AND VERIFICATION (Standalone Functions) ---

@@ -77,9 +77,8 @@
 
 # Current Status and Strategy (As of July 3, 2025)
 
-- **Focus:** The immediate goal is to create a performant pure-Python baseline before re-introducing Cython. The current parallel implementation is significantly slower than expected, indicating a major bottleneck in the worker process logic.
-- **Data Pipeline Concern:** The low CPU utilization during runs suggests a potential bottleneck in the data pipeline itself, where workers may be starved of data. The next step is to use the newly-added `--profile` flag to get a precise performance breakdown of the worker function to confirm the bottleneck's location.
-- **Key Algorithmic Insight ("Power of Two" Heuristic):** A crucial mathematical simplification has been identified. For an odd prime `p` to be the sum of two prime powers `a` and `b`, one of `a` or `b` *must* be a power of 2. This allows for a much more efficient check: instead of two expensive `is_prime_power()` calls, the check becomes `(is_power_of_2(a) and is_prime_power(b)) or (is_power_of_2(b) and is_prime_power(a))`. This will be the basis for the next implementation attempt after profiling is complete.
+- **Focus:** The immediate goal is to create a performant pure-Python baseline before re-introducing Cython. The previous bottleneck in the worker process has been resolved.
+- **Key Algorithmic Insight ("Power of Two" Heuristic):** A crucial mathematical simplification has been implemented. For an odd prime `p` to be the sum of two prime powers `a` and `b`, one of `a` or `b` *must* be a power of 2. This has been implemented using a highly efficient, vectorized checking function (`_vectorized_partition_check`) that uses boolean masking and avoids expensive computations on invalid data. This has resulted in a massive performance improvement.
 
 # Core Generation Scripts (As of July 3, 2025)
 
@@ -87,13 +86,13 @@
     - The script is encapsulated in a `PPPGenerator` class.
     - It uses a single level of parallelism: a `multiprocessing.Pool` distributes chunks of prime vectors to worker processes. The previous two-level (process + thread) model was removed as the PARI/GP library used by Sage is not thread-safe, which was causing segmentation faults.
     - Each worker process receives a prime vector, calls `fast_vector_partitions` (`fvp`), and iterates through the resulting partitions.
-    - For each partition, a check function determines which pairs consist of two prime powers. The logic for this check is the primary focus of our performance investigation.
+    - For each partition, a highly optimized check function (`_vectorized_partition_check`) determines which pairs consist of two prime powers using the "Power of Two" heuristic and efficient boolean masking.
 
 # Future Architecture and Refactoring (TODO)
 
 This section outlines potential future improvements for the `primepartgen.py` implementation.
 
-- [ ] **Refactor into a `PartitionGenerator` Class:**
+- [x] **Refactor into a `PartitionGenerator` Class:** (DONE)
     - Encapsulate the entire generation process within a class.
     - Configuration parameters (`num_primes`, `batch_size`, etc.) would become instance attributes.
     - The various worker and helper functions would become private methods, cleaning up the global namespace and improving state management.
@@ -135,58 +134,4 @@ This section outlines potential future improvements for test data storage and co
             - **"Ditto" (Semi-Flattened CSV):** A custom, semi-flattened CSV format where `n` and `n_rank` are repeated only when they change, with "ditto" or blank values for repeated `n` values within a group of partitions. This is primarily for human readability and would require custom writing/reading logic.
 
 - [ ] **Add Derived Per-Partition Information (post-`explode`):**
-    - **`p_rank`, `q_rank`:** Add columns for the prime rank of `p` and `q` for each partition.
-    - **Arithmetic String:** Include a string representation like "p^j + q^k = n" for each partition (e.g., "2^1 + 3^1 = 5").
-    - **Implementation Note:** These are properties of *individual partitions*. If using the grouped `n` structure, these columns would best be derived *after* loading the data into Pandas and "exploding" the `partitions_data` column back into separate rows using `df.explode('partitions_data')`. This allows vectorized calculation of these new columns.
-
-- [ ] **Ensure Consistent Sorting:**
-    - Explicitly sort the final generated DataFrame by `n` (and potentially by `partitions_data` elements, or `p` and `q` after `explode`) to ensure consistent test data order, regardless of multiprocessing output order. (Already partially implemented in `generate_test_data.py`). 
-
-- [ ] **Investigate `prime_range` vs `primes`:** Research the performance and memory implications of using `prime_range` to generate the initial list of primes, as it may be more direct and semantically clear than `list(primes(...))`. 
-
-
-# Cython Implementation Plan (As of July 2, 2025)
-
-This section outlines the plan to optimize the core partition checking logic by leveraging `gmpy2` and Cython, ensuring both mathematical exactness and high performance.
-
-- **Goal:** Eliminate the performance bottleneck of operating on arbitrary-precision integers in Python.
-
-- **Core Problem:** Standard NumPy arrays (`dtype=int64`) lack the required precision for large numbers. NumPy arrays of Python/Sage objects (`dtype='O'`) are precise but lose all vectorization benefits, requiring slow, element-by-element iteration in Python.
-
-- **Strategy: `gmpy2` + Cython:**
-    - We will use the `gmpy2` library, which provides direct C-level Python bindings to the GMP arbitrary-precision arithmetic library (the same one Sage uses).
-    - Data will be held in NumPy arrays with `dtype=object`, where each element is a `gmpy2.mpz` instance. This guarantees precision.
-    - The performance-critical functions will be written in Cython. These functions will take the NumPy arrays as input, then `cimport` `gmpy2`'s C-level definitions (`mpz_t`) to operate directly on the underlying GMP integers. This bypasses the Python interpreter entirely for the main loop, achieving C-level speed while maintaining arbitrary precision.
-
-- **Implementation Approach:**
-    1. Add `gmpy2` as a project dependency.
-    2. Create a `src/factorsums/fast_check.pyx` module (or similar).
-    3. This module will expose a Python-visible function (e.g., `are_prime_powers`) that accepts NumPy object arrays of `gmpy2.mpz` numbers.
-    4. The function will `cimport` from `gmpy2.pxd` to access the C-level `mpz_t` struct. It will iterate through the input arrays, extracting the `mpz_t` pointer from each `gmpy2.mpz` object.
-    5. Primality checks will be performed using GMP functions accessed via `gmpy2`'s C-API.
-    6. The function will return a boolean NumPy array indicating which numbers are prime powers.
-    7. The `pyproject.toml` will be updated to define this file as a setuptools extension module, ensuring it is compiled during installation.
-
-# Key Sage Files (As of July 2, 2025)
-
-This section documents the roles of key SageMath source files relevant to our project, based on our code investigation.
-
-- **`sage/rings/integer.pyx`:**
-    - This is the most low-level implementation of the core data type we are concerned with, the Sage `Integer`.
-    - It is a Cython file that wraps the GMP (GNU Multiple Precision Arithmetic) C library, providing the `Integer` object with its arbitrary-precision capabilities.
-    - Its `__array_interface__` reveals how Sage `Integer`s are converted to NumPy arrays, either as native integer types or as generic Python objects (`dtype='O'`) if they are too large.
-
-- **`sage/combinat/fast_vector_partitions.pyx`:**
-    - This file contains the `fast_vector_partitions` (`fvp`) algorithm.
-    - It is a highly specialized Cython module designed to generate vector partitions in batches.
-    - Crucially, while it may take Sage `Integer`s as input, its internal logic and `yield` statements produce standard Python `list`s of Python `int`s, not Sage objects. This is a key bottleneck and a source of our `AttributeError`.
-
-- **`sage.arith.power` & `sage.arith.misc`:**
-    - These files contain high-level, Python-callable functions for number theory, such as `is_prime_power` and the `prime_powers` generator.
-    - While convenient, they are not low-level C functions. Calling them in a tight loop from Python (or even basic Cython) incurs significant interpreter overhead.
-    - The `prime_powers` generator is analogous to `prime_range` but for prime powers.
-
-- **`sage.rings.prime.Primes`:**
-    - This is the class behind the `Primes()` iterator.
-    - It is primarily Python-oriented, making it easy to use for iterating through primes.
-    - This convenience makes it ideal for low-memory applications but less suited for situations demanding maximum speed, as each iteration involves Python overhead. 
+    - **`
